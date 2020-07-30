@@ -1,6 +1,6 @@
+#@autor : github.com/guidoenr4
 
-import yara
-import json
+import yara,os,json
 from flask import Flask, jsonify, request
 from rules import rulesList # lista de rules en rules.py
 
@@ -32,7 +32,7 @@ def addRule(): # se borran cuando el server se reinicia
     except KeyError:
         return jsonify({'status': str(KeyError)})
     else:
-        id = len(rulesList) + 1
+        id = len(rulesList)
         new_rule={
             'name':name,
             'rule':rule,
@@ -43,14 +43,20 @@ def addRule(): # se borran cuando el server se reinicia
         return jsonify({'id': id, 'name': new_rule['name'], 'rule': new_rule['rule'], 'response_code': 201})
 
 @app.route('/api/analyze/text', methods = ['POST'])
-def analizeText():
+def analyzeText():
+   responseBody={
+       'status':'ok',
+       'results':[
+       ]
+   }
    try:
        text = request.json['text']
        rules = request.json['rules']
    except KeyError:
        return jsonify({'status:': str(KeyError)})
-   else:
-       return 1
+   for rule in rules:
+       responseBody['results'].append(theTextPassTheRule(text, rule['rule_id']))
+   return responseBody
 
 
 #--------------------------------------------------TOOLS-------------------------------------------#
@@ -63,7 +69,7 @@ def compileRule(rule):
 
 def loadCurrentRules():
     try:
-        rules = yara.load('compiled-rules/compiledrules')
+        rules = yara.load('compiled-rules/myrules')
     except:
         print("Error loading the  current rules")
 
@@ -73,15 +79,32 @@ def findRuleById(id):
         rule = rulesList[i]
         if rule['id'] == id:
             return rule['rule']
-    i+=1
+        i+=1
 
+def compileCurrentRules():
+    for element in rulesList:
+        try:
+            compileRule(element['rule'])
+        except:
+            print("error compiling the rules")
+
+def theTextPassTheRule(text, rule_id):
+    rule = findRuleById(rule_id)
+    rules = yara.compile(source=rule)
+    filepath = text + '.txt'
+    f = open(filepath, 'w')
+    f.write(text)
+    f.close()
+    match = rules.match(filepath)
+    x = len(match) > 0
+    os.remove(filepath)
+    return {'rule_id': rule_id, 'matched':x}
 
 if __name__ == '__main__':
-    #loadCurrentRules()
-    # compileCurrentRules()
+    compileCurrentRules()
+    loadCurrentRules()
     app.run(debug=True, port=4000)
 
-    print(rule)
 
 
 
