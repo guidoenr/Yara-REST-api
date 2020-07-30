@@ -2,18 +2,14 @@
 import yara
 import json
 from flask import Flask, jsonify, request
-from rules import rulesList # lista de rules
+from rules import rulesList # lista de rules en rules.py
 
 app = Flask(__name__) # uso flas para levantar el sv
 
-if __name__ == '__main__':
-    app.run(debug=True, port=4000)
-
 #--------------------------------------------------GET ------------------------------------------#
-
 @app.route('/')
 def host(): #retorna un mensaje json para verificar que el sv anda
-    return jsonify({"message": "guidoenr4 yara_challenge - meli"})
+    return jsonify({'message': "guidoenr4 yara_challenge - meli"})
 
 @app.route('/rules', methods=['GET']) # retorna todas las rules que hay en el server
 def getRules():
@@ -23,28 +19,39 @@ def getRules():
 def getRule(rule_name):
     rulesFound = [rule for rule in rulesList if rule['name'] == rule_name] #barrido a la lista para ver la rule que piden
     if len(rulesFound) > 0:
-        return jsonify({"rule": rulesFound[0]}) # retorno la rule encontrada
+        return jsonify({'rule': rulesFound[0]}) # retorno la rule encontrada
     else:
-        return jsonify({"message":"Rule not found"})
+        return jsonify({'message':"Rule not found"})
 
 #--------------------------------------------------POST-------------------------------------------#
 @app.route('/api/rule', methods = ['POST'])
-def addRule():
-    new_rule = { # creo la rule con formato json y con el request.json['algo'] obtengo el value en ese campo mediante una request
-        "name": request.json['name'], # se obtiene de una peticion post al server, no por parametro, por eso el request.json
-        "rule": request.json['rule']
-    }
-    id = len(rulesList) + 1
-    if rulesList.append(new_rule):
-        return jsonify({"id":id, "name":new_rule['name'],"rule":new_rule['rule'],"response_code":201})
+def addRule(): # se borran cuando el server se reinicia
+    try:
+        name = request.json['name']
+        rule = request.json['rule']
+    except KeyError:
+        return jsonify({'status': str(KeyError)})
     else:
-        return jsonify({"errorStatus":rulesList.append(new_rule)})
+        new_rule={
+            'name':name,
+            'rule':rule
+        }
+        rulesList.append(new_rule)
+        id = len(rulesList)
+        rules = yara.compile(new_rule)
+        return jsonify({'id': id, 'name': new_rule['name'], 'rule': new_rule['rule'], 'response_code': 201})
 
 @app.route('/api/analyze/text', methods = ['POST'])
-def addTextToAnalize():
+def analizeText():
     new_text_to_analize = {
-        "text": request.json['text'],
-        "rules": request.json['rules']
+        'text': request.json['text'],
+        'rules': request.json['rules']
     }
 
+
+if __name__ == '__main__':
+    app.run(debug=True, port=4000)
+    i=0
+    while (i <= len(rulesList)):
+        rules = yara.compile(rulesList.json['rule'])
 
