@@ -32,26 +32,59 @@ def addRule(): # se borran cuando el server se reinicia
     except KeyError:
         return jsonify({'status': str(KeyError)})
     else:
+        id = len(rulesList) + 1
         new_rule={
             'name':name,
-            'rule':rule
+            'rule':rule,
+            'id':id
         }
         rulesList.append(new_rule)
-        id = len(rulesList)
-        rules = yara.compile(new_rule)
+        compileRule(new_rule['rule'])
         return jsonify({'id': id, 'name': new_rule['name'], 'rule': new_rule['rule'], 'response_code': 201})
 
 @app.route('/api/analyze/text', methods = ['POST'])
 def analizeText():
-    new_text_to_analize = {
-        'text': request.json['text'],
-        'rules': request.json['rules']
-    }
+   try:
+       text = request.json['text']
+       rules = request.json['rules']
+   except KeyError:
+       return jsonify({'status:': str(KeyError)})
+   else:
+       return 1
+
+
+#--------------------------------------------------TOOLS-------------------------------------------#
+def compileRule(rule):
+    try:
+        rules = yara.compile(source=rule)
+        rules.save('compiled-rules/myrules')
+    except:
+        print("error compiling the rule")
+
+def loadCurrentRules():
+    try:
+        rules = yara.load('compiled-rules/compiledrules')
+    except:
+        print("Error loading the  current rules")
+
+def findRuleById(id):
+    i=0
+    for rule in rulesList:
+        rule = rulesList[i]
+        if rule['id'] == id:
+            return rule['rule']
+    i+=1
 
 
 if __name__ == '__main__':
+    #loadCurrentRules()
+    # compileCurrentRules()
     app.run(debug=True, port=4000)
-    i=0
-    while (i <= len(rulesList)):
-        rules = yara.compile(rulesList.json['rule'])
+
+    print(rule)
+
+
+
+
+
 
