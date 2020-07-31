@@ -1,12 +1,12 @@
 #@autor : github.com/guidoenr4
 
-import yara,os,json,sys
+import yara,os,json,sys,ast
 from flask import Flask, jsonify, request
 from rules import rulesList # lista de rules en rules.py
 from flask import Response
 
 
-app = Flask(__name__) # uso flas para levantar el sv
+app = Flask(__name__) # uso flask para levantar el sv
 
 #--------------------------------------------------GET ------------------------------------------#
 @app.route('/')
@@ -23,7 +23,7 @@ def getRule(rule_name):
     if len(rulesFound) > 0:
         return jsonify({'rule': rulesFound[0]}) # retorno la rule encontrada
     else:
-        return jsonify({'message':"Rule not found"})
+        return jsonify({'message':"Rule not found"}), 404
 
 #--------------------------------------------------POST-------------------------------------------#
 @app.route('/api/rule', methods = ['POST'])
@@ -46,25 +46,30 @@ def addRule(): # se borran cuando el server se reinicia
 
 @app.route('/api/analyze/text', methods = ['POST'])
 def analyzeText():
-   responseBody={
-       'status':'ok',
-       'results':[
-       ]
-   }
    try:
        text = request.json['text']
        rules = request.json['rules']
    except KeyError as e:
        return jsonify({'status:': str(KeyError)}), type(e).__name__
-
-   for rule in rules:
-       responseBody['results'].append(theTextPassTheRule(text, rule['rule_id']))
-   return responseBody,200
+   else:
+       responseBody = {'status': 'ok', 'results': []}
+       for rule in rules:
+           responseBody['results'].append(theTextPassTheRule(text, rule['rule_id']))
+       return responseBody, 200
 
 @app.route('/api/analyze/file', methods = ['POST'])
 def analyzeFile():
-    pass
-
+    try:
+        contentType = request.headers['content-type']
+        rules = ast.literal_eval('[' + request.form['rules'] + ']') #converting to list
+        file = request.form['file']
+    except KeyError as e:
+        return jsonify({'status:': str(KeyError)}), type(e).__name__
+    else:
+        responseBody={'status': 'ok', 'results': []}
+        for ruleid in rules:
+            responseBody['results'].append(theFilePassTheRule(file, ruleid))
+        return responseBody, 200
 
 #--------------------------------------------------TOOLS-------------------------------------------#
 def compileRule(rule):
@@ -99,21 +104,32 @@ def theTextPassTheRule(text, rule_id):
     rule = findRuleById(rule_id)
     if (rule == None):
         return {'status':'error','cause':'the rule '+str(rule_id) + ' doesnt exist'}
-    rules = yara.compile(source=rule)
-    filepath = text + '.txt'
-    f = open(filepath, 'w') #yara si o si te obliga a hacer un file, no lo podes hacer con un string de python
-    f.write(text)
-    f.close()
-    match = rules.match(filepath)
-    x = len(match) > 0
-    os.remove(filepath)
-    return {'rule_id': rule_id, 'matched':x}
+    else:
+        rules = yara.compile(source=rule)
+        filepath = text + '.txt'
+        f = open(filepath, 'w') #yara si o si te obliga a hacer un file, no lo podes hacer con un string de python
+        f.write(text)
+        f.close()
+        match = rules.match(filepath)
+        x = len(match) > 0
+        os.remove(filepath)
+        return {'rule_id': rule_id, 'matched': x}
+
+def theFilePassTheRule(file, rule_id):
+    rule = findRuleById(rule_id)
+    if (rule == None):
+        return {'status': 'error', 'cause': 'the rule ' + str(rule_id) + ' doesnt exist'}
+    else:
+        rules = yara.compile(source=rule)
+        match = rules.match(file)
+        x = len(match) > 0
+        return {'rule_id': rule_id, 'matched': x}
 
 
 if __name__ == '__main__':
     compileCurrentRules()
     loadCurrentRules()
-    app.run(debug=True, port=4000)
+    app.run(debug=True, port=8080)
 
 
 
