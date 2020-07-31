@@ -1,11 +1,10 @@
-echo -e "\e[93m Analyze text : $1 "
-sleep 1
+echo -e "\e[93m Analyze text : defaultext"
 
 curl --request POST \
   --url http://localhost:8080/api/analyze/text \
   --header 'content-type: application/json' \
   --data '{
-	"text":"$1",
+	"text":"virus",
 	"rules": [
 		{
 			"rule_id": 0
