@@ -1,8 +1,10 @@
 #@autor : github.com/guidoenr4
 
-import yara,os,json
+import yara,os,json,sys
 from flask import Flask, jsonify, request
 from rules import rulesList # lista de rules en rules.py
+from flask import Response
+
 
 app = Flask(__name__) # uso flas para levantar el sv
 
@@ -29,8 +31,8 @@ def addRule(): # se borran cuando el server se reinicia
     try:
         name = request.json['name']
         rule = request.json['rule']
-    except KeyError:
-        return jsonify({'status': str(KeyError)})
+    except KeyError as e:
+        return jsonify({'status': str(KeyError)}), type(e).__name__
     else:
         id = len(rulesList)
         new_rule={
@@ -40,7 +42,7 @@ def addRule(): # se borran cuando el server se reinicia
         }
         rulesList.append(new_rule)
         compileRule(new_rule['rule'])
-        return jsonify({'id': id, 'name': new_rule['name'], 'rule': new_rule['rule'], 'response_code': 201})
+        return jsonify({'id': id, 'name': new_rule['name'], 'rule': new_rule['rule']}), 201
 
 @app.route('/api/analyze/text', methods = ['POST'])
 def analyzeText():
@@ -52,11 +54,16 @@ def analyzeText():
    try:
        text = request.json['text']
        rules = request.json['rules']
-   except KeyError:
-       return jsonify({'status:': str(KeyError)})
+   except KeyError as e:
+       return jsonify({'status:': str(KeyError)}), type(e).__name__
+
    for rule in rules:
        responseBody['results'].append(theTextPassTheRule(text, rule['rule_id']))
-   return responseBody
+   return responseBody,200
+
+@app.route('/api/analyze/file', methods = ['POST'])
+def analyzeFile():
+    pass
 
 
 #--------------------------------------------------TOOLS-------------------------------------------#
@@ -90,9 +97,11 @@ def compileCurrentRules():
 
 def theTextPassTheRule(text, rule_id):
     rule = findRuleById(rule_id)
+    if (rule == None):
+        return {'status':'error','cause':'the rule '+str(rule_id) + ' doesnt exist'}
     rules = yara.compile(source=rule)
     filepath = text + '.txt'
-    f = open(filepath, 'w')
+    f = open(filepath, 'w') #yara si o si te obliga a hacer un file, no lo podes hacer con un string de python
     f.write(text)
     f.close()
     match = rules.match(filepath)
@@ -100,10 +109,13 @@ def theTextPassTheRule(text, rule_id):
     os.remove(filepath)
     return {'rule_id': rule_id, 'matched':x}
 
+
 if __name__ == '__main__':
     compileCurrentRules()
     loadCurrentRules()
     app.run(debug=True, port=4000)
+
+
 
 
 
