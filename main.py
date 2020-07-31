@@ -1,9 +1,8 @@
 #@autor : github.com/guidoenr4
 
-import yara,os,json,sys,ast
+import yara, os, ast
 from flask import Flask, jsonify, request
 from rules import rulesList # lista de rules en rules.py
-from flask import Response
 
 
 app = Flask(__name__) # uso flask para levantar el sv
