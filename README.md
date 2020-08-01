@@ -239,7 +239,7 @@ ejemplo:
 ### Analizar un archivo
 En el directorio **analyzeTexts** se encuentran scripts para analizar un file donde se le debe pasar el path del archivo a mandar
 ejemplo:
-
+**`bash analyzeTexts/defaultFile.sh`**
       #!bin/sh
 
       echo -e "\e[93m Analyze file: /root/Escritorio/default_file.txt"
