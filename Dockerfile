@@ -4,6 +4,7 @@ WORKDIR /home
 
 COPY . .
 
-RUN pip3 install -r requirements.txt
+RUN pip3 install Flask-HTTPAuth \
+    && pip3 install -r requirements.txt
 
 ENTRYPOINT ["python3","main.py"]

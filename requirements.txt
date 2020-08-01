@@ -3,4 +3,13 @@ flask-restplus>=0.13,<0.14
 Flask-SSLify>=0.1.5,<0.2
 Flask-Admin>=1.5.3,<1.6
 gunicorn>=19,<20
-
+pip~=20.2
+wheel~=0.34.2
+Brotli~=1.0.7
+cryptography~=2.8
+lxml~=4.5.0
+setuptools~=49.2.0
+Cython~=0.29.21
+docutils~=0.16
+future~=0.18.2
+Werkzeug~=1.0.0

@@ -1,18 +1,26 @@
 #@autor : github.com/guidoenr4
 
 import os, ast
-from flask import Flask, jsonify, request
-from rules import rulesList # lista de rules en rules.py
 import yara
+from flask import Flask, jsonify, request
+from rules import rulesList
+from flask_httpauth import HTTPBasicAuth
+from werkzeug.security import generate_password_hash, check_password_hash
+app = Flask(__name__)
+auth = HTTPBasicAuth()
 
-app = Flask(__name__) # uso flask para levantar el sv
+users = {
+    'admin': generate_password_hash('root'),
+    'guido': generate_password_hash('mercadolibre')
+}
 
 #--------------------------------------------------GET ------------------------------------------#
 @app.route('/')
 def host(): #retorna un mensaje json para verificar que el sv anda
     return jsonify({'message': "guidoenr4 yara_challenge - meli"})
 
-@app.route('/rules', methods=['GET']) # retorna todas las rules que hay en el server
+@app.route('/rules', methods=['GET'])
+@auth.login_required()
 def getRules():
     return jsonify(rulesList)
 
@@ -26,6 +34,7 @@ def getRule(rule_name):
 
 #--------------------------------------------------POST-------------------------------------------#
 @app.route('/api/rule', methods = ['POST'])
+@auth.login_required()
 def addRule(): # se borran cuando el server se reinicia
     try:
         name = request.json['name']
@@ -71,6 +80,12 @@ def analyzeFile():
         return responseBody, 200
 
 #--------------------------------------------------TOOLS-------------------------------------------#
+@auth.verify_password
+def verify_password(username, password):
+    if username in users and \
+            check_password_hash(users.get(username), password):
+        return username
+
 def compileRule(rule):
     try:
         rules = yara.compile(source=rule)
