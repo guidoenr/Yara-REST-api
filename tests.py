@@ -1,6 +1,5 @@
-import main, unittest, requests, json
+import unittest, requests
 from main import app
-from flask import jsonify
 
 class BasicTests(unittest.TestCase):
     def setUp(self):
