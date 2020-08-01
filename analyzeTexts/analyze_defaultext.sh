@@ -10,9 +10,6 @@ curl --request POST \
 	"rules": [
 		{
 			"rule_id": 0
-		},
-		{
-			"rule_id": 1
 		}
-	]
+		 ]
 }'
