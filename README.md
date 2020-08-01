@@ -145,7 +145,7 @@ el `PUERTOLOCAL=8080` es un puerto aleatorio que debe elegir el cliente para pod
 
 #### 5
 Para poder ver en tiempo real las respuestas del servidor, se debe ejecutar el comando \
-`docker logs -f meliyara` \
+`docker logs -f melitest` \
 al hacer un `CTRL+C` matarias el log, pero **no** el servidor, al estar ejecutado el comando, podes entrar a `localhost:8080` desde tu navegador y recibir una respuesta
 
       {
