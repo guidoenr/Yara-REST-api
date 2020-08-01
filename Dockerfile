@@ -1,15 +1,9 @@
-from alpine:latest
+FROM guidoenr4/yara-python-3.8:latest
 
-RUN apk add --no-cache python3-dev \
-    && apk add cmd:pip3 \
-    && pip3 install --upgrade pip 
+WORKDIR /home
 
-WORKDIR /app 
+COPY . .
 
-COPY . /app
+RUN pip3 install -r requirements.txt
 
-RUN pip3 --no-cache-dir install -r requirements.txt
-EXPOSE 5000
-
-ENTRYPOINT ["python3"]
-CMD ["main.py"]
+ENTRYPOINT ["python3","main.py"]

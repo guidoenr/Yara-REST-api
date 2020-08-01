@@ -1,9 +1,9 @@
 #@autor : github.com/guidoenr4
 
-import yara, os, ast
+import os, ast
 from flask import Flask, jsonify, request
 from rules import rulesList # lista de rules en rules.py
-
+import yara
 
 app = Flask(__name__) # uso flask para levantar el sv
 
@@ -35,9 +35,9 @@ def addRule(): # se borran cuando el server se reinicia
     else:
         id = len(rulesList)
         new_rule={
-            'name':name,
-            'rule':rule,
-            'id':id
+            'name': name,
+            'rule': rule,
+            'id': id
         }
         rulesList.append(new_rule)
         compileRule(new_rule['rule'])
@@ -102,7 +102,7 @@ def compileCurrentRules():
 def theTextPassTheRule(text, rule_id):
     rule = findRuleById(rule_id)
     if (rule == None):
-        return {'status':'error','cause':'the rule '+str(rule_id) + ' doesnt exist'}
+        return {'status': 'error','cause': 'the rule '+str(rule_id) + ' doesnt exist'}
     else:
         rules = yara.compile(source=rule)
         filepath = text + '.txt'
@@ -128,7 +128,7 @@ def theFilePassTheRule(file, rule_id):
 if __name__ == '__main__':
     compileCurrentRules()
     loadCurrentRules()
-    app.run(debug=True, port=8080)
+    app.run(debug=False, port=8080, host="0.0.0.0") #esto permite montar mi ip a nivel red
 
 
 

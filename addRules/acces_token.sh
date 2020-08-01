@@ -3,7 +3,7 @@
 echo -e "\e[92m Add rule : is a acces token"
 sleep 1
 curl --request POST \
-  --url http://localhost:8080/api/rule \
+  --url http://localhost:8081/api/rule \
   --header 'content-type: application/json' \
   --data '{
   "name":"access token rule",
