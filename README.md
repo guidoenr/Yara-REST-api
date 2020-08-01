@@ -232,7 +232,8 @@ ejemplo:
       }'
 
 ### Analizar un archivo
-donde se le debe pasar el path del archivo a mandar
+En el directorio **analyzeTexts** se encuentran scripts para analizar un file donde se le debe pasar el path del archivo a mandar
+ejemplo:
 
       #!bin/sh
 
