@@ -124,20 +124,20 @@ Dockerfile:
 
 ## Pasos
 
-### 1
+#### 1
 Instalar [Docker](https://www.docker.com/)
 
-### 2
+#### 2
 Descargar el repositorio mediante un `git clone https://github.com/irt-mercadolibre/challenge_yara_guidoenr4` o simplemente descargar el `.zip` y extraerlo
 
-### 3
+#### 3
 Una vez instalado docker y clonado el repositorio, correr el comando : `docker build -t melichallenge .` dentro del directorio donde fue descargado el repositorio, para poder compilarlo y descargar las imagenes y librerias necesarias automaticamente.
 
-### 4
+#### 4
 Al estar compilado se puede correr de varias formas, la que yo recomiendo es correrla con el comando `docker run -d -p PUERTOLOCAL:8080 melichallenge `
 donde la aplicación corre de fondo, lo cual en este caso es util puesto que es un servidor y queremos tenerlo levantado para hacer las correspondientes pruebas.
 el `PUERTOLOCAL` es un puerto aleatorio que debe elegir el cliente para poder hacer el mapeo de puertos, y el `8080` es el default del script.
 *recomiendo usar -p 8080:8080* para poder acceder desde su navegador a `localhost:8080`
 
-## 5
+#### 5
 Para poder ver en tiempo real las respuestas del servidor, se debe ejecutar el comando `docker logs -f melichallenge`, al hacer un `CTRL+C` matarias el log, pero **no** el servidor.
