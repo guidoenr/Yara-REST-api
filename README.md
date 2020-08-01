@@ -131,24 +131,29 @@ Instalar [Docker](https://www.docker.com/)
 Descargar el repositorio mediante un `git clone https://github.com/irt-mercadolibre/challenge_yara_guidoenr4` o simplemente descargar el `.zip` y extraerlo
 
 #### 3
-Una vez instalado docker y clonado el repositorio, correr el comando : \ `docker build -t melichallenge .` \ dentro del directorio donde fue descargado el repositorio, para poder compilarlo y descargar las imagenes y librerias necesarias automaticamente.
+Una vez instalado docker y clonado el repositorio, correr el comando : \ 
+`docker build -t melichallenge .` \
+dentro del directorio donde fue descargado el repositorio (`cd challenge_yara_guidoenr4`), para poder compilarlo y descargar las imagenes y librerias necesarias automaticamente.
 
 #### 4
-Al estar compilado se puede correr de varias formas, la que yo recomiendo es correrla con el comando \ `docker run -d -p PUERTOLOCAL:8080 --name meliyara mellichallenge` \
+Al estar compilado se puede correr de varias formas, la que yo recomiendo es correrla con el comando 
+`docker run -d -p 8080:8080 --name melitest melichallenge` \
 donde la aplicación corre de fondo, lo cual en este caso es util puesto que es un servidor y queremos tenerlo levantado para hacer las correspondientes pruebas.
-el `PUERTOLOCAL` es un puerto aleatorio que debe elegir el cliente para poder hacer el mapeo de puertos, y el `8080` es el default del script.
-*recomiendo usar -p 8080:8080* para poder acceder desde su navegador a `localhost:8080`
-*obs* el `--name meliyara melichallenge` es un ejemplo, donde el primer argumento es el nombre del contenedor y el segundo el nombre de la imagen que se tipeo en el paso 3
+el `PUERTOLOCAL=8080` es un puerto aleatorio que debe elegir el cliente para poder hacer el mapeo de puertos (primer parametro), y el `8080` es el default del script.
+**recomiendo usar -p 8080:8080** para poder acceder desde su navegador a `localhost:8080`
+(*obs*: el `--name melitest melichallenge` es un ejemplo, donde el primer argumento es el nombre del contenedor y el segundo el nombre de la imagen que se tipeo en el paso 3)
 
 #### 5
-Para poder ver en tiempo real las respuestas del servidor, se debe ejecutar el comando \ `docker logs -f meliyara` \ , al hacer un `CTRL+C` matarias el log, pero **no** el servidor, al estar ejecutado el comando, podes entrar a `localhost:8080` desde tu navegador y recibir una respuesta
+Para poder ver en tiempo real las respuestas del servidor, se debe ejecutar el comando \
+`docker logs -f meliyara` \
+al hacer un `CTRL+C` matarias el log, pero **no** el servidor, al estar ejecutado el comando, podes entrar a `localhost:8080` desde tu navegador y recibir una respuesta
 
       {
          "message" : "guidoenr4 yara_challenge - meli"
       }
 
 para verificar que el servidor esta corriendo,[..] luego de un tiempo determinado, podes finalizar el servidor con el comando \
-`docker stop meliyara` \
+`docker stop melitest` \
 y liberar la conexion en el puerto 8080
 
 # Extras
