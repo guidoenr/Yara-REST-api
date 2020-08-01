@@ -22,7 +22,7 @@ def host(): #retorna un mensaje json para verificar que el sv anda
 @app.route('/rules', methods=['GET'])
 @auth.login_required()
 def getRules():
-    return jsonify(rulesList)
+    return jsonify(rulesList),200
 
 @app.route('/rules/<string:rule_name>', methods=['GET']) # retorna una rule especifica, si no esta, retorna un message
 def getRule(rule_name):

@@ -13,3 +13,4 @@ Cython~=0.29.21
 docutils~=0.16
 future~=0.18.2
 Werkzeug~=1.0.0
+requests~=2.23.0
