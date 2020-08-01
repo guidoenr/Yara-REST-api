@@ -17,7 +17,7 @@ users = {
 #--------------------------------------------------GET ------------------------------------------#
 @app.route('/')
 def host(): #retorna un mensaje json para verificar que el sv anda
-    return jsonify({'message': "guidoenr4 yara_challenge - meli"})
+    return jsonify({'message': 'guidoenr4 yara_challenge - meli'})
 
 @app.route('/rules', methods=['GET'])
 @auth.login_required()
@@ -30,7 +30,7 @@ def getRule(rule_name):
     if len(rulesFound) > 0:
         return jsonify({'rule': rulesFound[0]}) # retorno la rule encontrada
     else:
-        return jsonify({'message':"Rule not found"}), 404
+        return jsonify({'message': "Rule not found"}), 404
 
 #--------------------------------------------------POST-------------------------------------------#
 @app.route('/api/rule', methods = ['POST'])
@@ -139,11 +139,10 @@ def theFilePassTheRule(file, rule_id):
         x = len(match) > 0
         return {'rule_id': rule_id, 'matched': x}
 
-
 if __name__ == '__main__':
     compileCurrentRules()
     loadCurrentRules()
-    app.run(debug=False, port=8080, host="0.0.0.0") #esto permite montar mi ip a nivel red
+    app.run(debug=False, port=8080, host="0.0.0.0")
 
 
 

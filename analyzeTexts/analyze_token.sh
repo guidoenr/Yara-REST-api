@@ -1,3 +1,4 @@
+#!/bin/bash
 echo -e "\e[93m Analyze text : defaultext"
 
 curl --request POST \
