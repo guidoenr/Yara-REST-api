@@ -150,7 +150,6 @@ el `PUERTOLOCAL=8080` es un puerto aleatorio que debe elegir el cliente para pod
 
 #### 5: Ver las respuestas del servidor
 Para poder ver en tiempo real las respuestas del servidor, se debe ejecutar el comando \
-<<<<<<< HEAD
 `docker logs -f meliyara` \
 lo cual permite ver el historial de peticiones que le son enviadas al servidor, donde el mismo esta corriendo de fondo \
 al hacer un `CTRL+C` matarias el log, pero **no** el servidor. \
@@ -162,7 +161,6 @@ al estar ejecutado el comando, podes entrar a `localhost:8080` desde tu navegado
 ```
 para verificar que el servidor esta corriendo y funcionando.. \
 luego de un tiempo determinado, podes finalizar el servidor con el comando \
-=======
 `docker logs -f melitest` \
 al hacer un `CTRL+C` matarias el log, pero **no** el servidor, al estar ejecutado el comando, podes entrar a `localhost:8080` desde tu navegador y recibir una respuesta
 
@@ -170,8 +168,7 @@ al hacer un `CTRL+C` matarias el log, pero **no** el servidor, al estar ejecutad
          "message" : "guidoenr4 yara_challenge - meli"
       }
 
-para verificar que el servidor esta corriendo,[..] luego de un tiempo determinado, podes finalizar el servidor con el comando \
->>>>>>> e058e112535cab9499814f6a12d5050a0970acbe
+para verificar que el servidor esta corriendo, luego de un tiempo determinado, podes finalizar el servidor con el comando \
 `docker stop melitest` \
 y liberar la conexion en el puerto 8080 \
 **OBS:** **al stopear el servidor, el mismo perdera todas las reglas que ya tiene cargadas, y quedara unicamente con su defaultRule**
@@ -180,14 +177,14 @@ y liberar la conexion en el puerto 8080 \
 ## Logging - Autentication
 Implemente una autenticacion para ciertas rutas del sitio, como `/rules` [METHOD=GET] , y para `api/rule` [METHOD=POST]
      
-     #user:password format
-     users = {
-       'admin': 'root'
-       'guido': 'mercadolibre'
-      }
+```json
+ users = {
+   'admin': 'root'
+   'guido': 'mercadolibre'
+  }
+```
 
-
-## Scripts en BASH
+## Scripts en BASH (only on linux)
 #### Añadir una regla yara
 Implemente algunas reglas de yara que se pueden ver en el directorio del repositorio **addRules** el cual contiene varias reglas de yara ya cargadas en un curl para un manejo mas facil en el envio de peticiones al servidor
 ejemplo: 
@@ -240,37 +237,38 @@ curl --request POST \
 Tambien existe el directorio **analyzeTexts** que contiene scripts pero para analizar los textos ya con la autenticacion cargada
 ejemplo:
 **`bash analyzeTexts/analyze_token.sh`**
+```console
+  #!/bin/bash
+  echo -e "\e[93m Analyze text : defaultext"
 
-      #!/bin/bash
-      echo -e "\e[93m Analyze text : defaultext"
-
-      curl --request POST \
-        --url http://localhost:8080/api/analyze/text \
-        --header 'content-type: application/json' \
-        --data '{
-         "text":"TOKEN_2014-06-03_112332",
-         "rules": [
-            {
-               "rule_id": 0
-            },
-            {
-               "rule_id": 1
-            }
-         ]
-      }'
-
+  curl --request POST \
+    --url http://localhost:8080/api/analyze/text \
+    --header 'content-type: application/json' \
+    --data '{
+     "text":"TOKEN_2014-06-03_112332",
+     "rules": [
+        {
+           "rule_id": 0
+        },
+        {
+           "rule_id": 1
+        }
+     ]
+  }'
+```
 #### Analizar un archivo
 En el directorio **analyzeTexts** se encuentran scripts para analizar un file donde se le debe pasar el path del archivo a mandar
 ejemplo:
 **`bash analyzeTexts/defaultFile.sh`**
-      #!bin/sh
+```console
+  #!bin/sh
 
-      echo -e "\e[93m Analyze file: /root/Escritorio/default_file.txt"
+  echo -e "\e[93m Analyze file: /root/Escritorio/default_file.txt"
 
-      curl -X POST \
-        http://localhost:8080/api/analyze/file \
-        -H 'content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' \
-        -F file='file=@/root/Escritorio/default_file.txt' \
-        -F 'rules=1,2'
-
+  curl -X POST \
+    http://localhost:8080/api/analyze/file \
+    -H 'content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' \
+    -F file='file=@/root/Escritorio/default_file.txt' \
+    -F 'rules=1,2'
+```
 
