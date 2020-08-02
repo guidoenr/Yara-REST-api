@@ -2,6 +2,7 @@ import unittest, requests
 from main import app
 
 class BasicTests(unittest.TestCase):
+
     def setUp(self):
         app.config['TESTING'] = True
         app.config['WTF_CSRF_ENABLED'] = False
@@ -35,6 +36,7 @@ class BasicTests(unittest.TestCase):
         self.assertEqual(data, response.json())
 
 class AddRulesTest(unittest.TestCase):
+
     def test_add_rule_without_autentication(self):
         ruledata = {
             "name": "access token rule",
@@ -63,15 +65,29 @@ class AddRulesTest(unittest.TestCase):
             'rule': "rule oldToken\r\n{\r\n strings:\r\n $a0 = \"2016-02\"\r\n $a1 = \"2017-\"\r\n $a2 = \"2018-\"\r\n $a3 = \"2019-\"\r\n $a4 = \"2020-\"\r\n condition:\r\n   any of them\r\n}"
         }
         response_ok = {
-            'id': 2,
+            'id': 3,
             'name': "old token rule",
             "rule": "rule oldToken\r\n{\r\n strings:\r\n $a0 = \"2016-02\"\r\n $a1 = \"2017-\"\r\n $a2 = \"2018-\"\r\n $a3 = \"2019-\"\r\n $a4 = \"2020-\"\r\n condition:\r\n   any of them\r\n}"
         }
         response = requests.post('http://localhost:8080/api/rule', auth=('admin', 'root'), json=rule_request)
         self.assertEqual(response_ok, response.json())
 
+    def test_add_suspicious_strings_rule(self):
+        rule_request = {
+            'name': 'suspicious strings rule',
+            "rule":"rule SuspiciosStrings\r\n{\r\n strings:\r\n $a0 = \"backdoor\"\r\n $a1 = \"virus\"\r\n condition:\r\n   any of them\r\n}"
+        }
+        response_ok = {
+            'id': 2,
+            'name': 'suspicious strings rule',
+            "rule":"rule SuspiciosStrings\r\n{\r\n strings:\r\n $a0 = \"backdoor\"\r\n $a1 = \"virus\"\r\n condition:\r\n   any of them\r\n}"
+        }
+        response = requests.post('http://localhost:8080/api/rule', auth=('admin', 'root'), json=rule_request)
+        self.assertEqual(response_ok, response.json())
+
 
 class AnalyzeTextTest(unittest.TestCase):
+
     def test_the_text_is_secure(self):
         text_data = {
             "text": "esto es un texto a analizar",
@@ -99,6 +115,30 @@ class AnalyzeTextTest(unittest.TestCase):
     def test_the_token_is_older_than_january_2016(self):
         text_data = {
             "text": "TOKEN_2017-06-03_112332",
+            "rules": [{"rule_id": 1}]
+        }
+        response_ok = {
+            'status': 'ok',
+            'results': [{'rule_id': 1, 'matched': True}]
+        }
+        response = requests.post('http://localhost:8080/api/analyze/text', json=text_data)
+        self.assertEqual(response_ok, response.json())
+
+    def test_the_rule_doesnt_exist(self):
+        text_data = {
+            "text": "untexto",
+            "rules": [{"rule_id": 123}]
+        }
+        response_ok = {
+            'status': 'ok',
+            'results': [{'rule_id': 123, 'matched': 'error', 'cause': 'the rule 123 doesnt exist'}]
+        }
+        response = requests.post('http://localhost:8080/api/analyze/text', json=text_data)
+        self.assertEqual(response_ok, response.json())
+
+    def test_the_text_is_a_virus(self):
+        text_data = {
+            "text": "virus",
             "rules": [{"rule_id": 2}]
         }
         response_ok = {

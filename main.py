@@ -9,12 +9,20 @@ from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__)
 auth = HTTPBasicAuth()
 
+
+#--------------------------------------------------LOGGIN- AUTENTICATION ------------------------#
 users = {
     'admin': generate_password_hash('root'),
     'guido': generate_password_hash('mercadolibre')
 }
 
-#--------------------------------------------------GET ------------------------------------------#
+@auth.verify_password
+def verify_password(username, password):
+    if username in users and \
+            check_password_hash(users.get(username), password):
+        return username
+
+#-------------------------------------------------- GET -----------------------------------------#
 @app.route('/')
 def host(): #retorna un mensaje json para verificar que el sv anda
     return jsonify({'message': 'guidoenr4 yara_challenge - meli'})
@@ -32,7 +40,7 @@ def getRule(rule_name):
     else:
         return jsonify({'message': "Rule not found"}), 404
 
-#--------------------------------------------------POST-------------------------------------------#
+#------------------------------------------------- POST ------------------------------------------#
 @app.route('/api/rule', methods = ['POST'])
 @auth.login_required()
 def addRule(): # se borran cuando el server se reinicia
@@ -80,12 +88,6 @@ def analyzeFile():
         return responseBody, 200
 
 #--------------------------------------------------TOOLS-------------------------------------------#
-@auth.verify_password
-def verify_password(username, password):
-    if username in users and \
-            check_password_hash(users.get(username), password):
-        return username
-
 def compileRule(rule):
     try:
         rules = yara.compile(source=rule)
@@ -117,7 +119,7 @@ def compileCurrentRules():
 def theTextPassTheRule(text, rule_id):
     rule = findRuleById(rule_id)
     if (rule == None):
-        return {'status': 'error','cause': 'the rule '+str(rule_id) + ' doesnt exist'}
+        return {'rule_id': rule_id, 'matched': 'error', 'cause': 'the rule ' + str(rule_id) + ' doesnt exist'}
     else:
         rules = yara.compile(source=rule)
         filepath = text + '.txt'
@@ -132,7 +134,7 @@ def theTextPassTheRule(text, rule_id):
 def theFilePassTheRule(file, rule_id):
     rule = findRuleById(rule_id)
     if (rule == None):
-        return {'status': 'error', 'cause': 'the rule ' + str(rule_id) + ' doesnt exist'}
+        return {'rule_id': rule_id, 'matched': 'error', 'cause': 'the rule ' + str(rule_id) + ' doesnt exist'}
     else:
         rules = yara.compile(source=rule)
         match = rules.match(file)
