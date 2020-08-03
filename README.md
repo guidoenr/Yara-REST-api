@@ -89,23 +89,29 @@ Pero en el caso en el que **las reglas no se encuentren cargadas**, la pagina no
 
 #### Analyze File
 `http://localhost:8080/api/analyze/file` \
-Mediante esta ruta se puede mandar una peticion `POST` con un archivo para analizar, especificandole que reglas se quieren matchear con el archivo. No necesita autenticación, cualquier cliente podria mandar un archivo y verificar si el archivo pasa por las rules cargadas actualmente \
+Mediante esta ruta se puede mandar una peticion `POST` con un archivo para analizar, especificandole que reglas se quieren matchear con el archivo. No necesita autenticación, cualquier cliente podria mandar un archivo y verificar si el archivo pasa por las rules cargadas actualmente. \
+Se agrego una **funcionalidad** para este caso, que consta de tener una lista con un tipo de archivos permitidos, lo cual esta pensado para que al recibir archivos dudosos del tipo `.exe`, `.py`, entre otros, el sitio responda con un codigo de error y no permita subir el archivo para analizarlo, porque podria by-passear las rules. 
+```json
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+```
 Curl de ejemplo:
 
     curl -X POST \
       http://localhost:8080/api/analyze/file \
       -H 'content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' \
-      -F file=@file \
+      -F file='@/root/Escritorio/default_file.txt' \
       -F 'rules=1,2'
 
 
-La funcion `analyzeFile()` *line: 69 on main.py* al recibir un file, tiene la misma logica que la funcion `analyzeText()` y los mismos ResponseBody, la unica diferencia en esta funcion es que en su implementacion de `try:catch:else` tambien chequea que se les pasen datos del form y de los headers. \
+La funcion `analyzeFile()` *line: 69 on main.py* al recibir un file, tiene la misma logica que la funcion `analyzeText()` y los mismos ResponseBody, la unica diferencia en esta funcion es que en su implementacion de `try:catch:else` tambien chequea que se les pasen datos del form, headers y el archivo en cuestion, tambien verificando lo mencionado arriba sobre las extensiones. \
 *`line 78 on main.py`*
 ```python
 try:
-  contentType = request.headers['content-type']
-  rules = ast.literal_eval('[' + request.form['rules'] + ']') 
-  file = request.form['file']
+    contentType = request.headers['content-type']
+    rules = ast.literal_eval('[' + request.form['rules'] + ']')
+    file = request.files['file']
+    extension = file.filename.split('.')
+    ALLOWED_EXTENSIONS.__contains__(extension[1])
 ```
 
 # Instalación
@@ -152,22 +158,20 @@ el `PUERTOLOCAL=8080` es un puerto aleatorio que debe elegir el cliente para pod
 Para poder ver en tiempo real las respuestas del servidor, se debe ejecutar el comando \
 `docker logs -f melitest` \
 lo cual permite ver el historial de peticiones que le son enviadas al servidor, donde el mismo esta corriendo de fondo \
-al hacer un `CTRL+C` matarias el log, pero **no** el servidor. \
-al estar ejecutado el comando, podes entrar a `localhost:8080` desde tu navegador y recibir una respuesta
+Al estar iniciado el servidor, podes entrar a `http://localhost:8080` desde tu navegador y recibir una respuesta como esta:
 ```json
-{
- "message" : "guidoenr4 yara_challenge - meli"
-}
+Hello, Friend :) Bienvenido al meli-challenge de Guido Enrique
 ```
 para verificar que el servidor esta corriendo y funcionando.. \
-luego de un tiempo determinado, podes finalizar el servidor con el comando \
+Luego de un tiempo determinado, podes finalizar el servidor con el comando \
 `docker stop melitest` \
 y liberar la conexion en el puerto 8080 \
 **OBS:** **al stopear el servidor, el mismo perdera todas las reglas que ya tiene cargadas, y quedara unicamente con su defaultRule**
 
 # Extras
 ## Logging - Autentication
-Implemente una autenticacion para ciertas rutas del sitio, como `/rules` [METHOD=GET] , y para `api/rule` [METHOD=POST]
+Implemente una autenticacion para ciertas rutas del sitio, como `/rules` [METHOD=GET] , y para `api/rule` [METHOD=POST] utilizando la libreria [HTTPBasicAuth](https://flask-httpauth.readthedocs.io/en/latest/) de Flask\
+Las credenciales de accesos son las siguientes: *(user:password)*
      
 ```json
  users = {
@@ -175,10 +179,20 @@ Implemente una autenticacion para ciertas rutas del sitio, como `/rules` [METHOD
    'guido': 'mercadolibre'
   }
 ```
+## TESTING - Python Unit Tests
+.\
+.\
+.\
+.\
+.\
+.
+
 
 ## Scripts en BASH (only on linux)
-#### Añadir una regla yara
-Implemente algunas reglas de yara que se pueden ver en el directorio del repositorio **addRules** el cual contiene varias reglas de yara ya cargadas en un curl para un manejo mas facil en el envio de peticiones al servidor
+**El repositorio cuenta con 3 carpetas: `addRules/` , `analyzeFiles` y `analyzeTexts` que contienen scripts escritos en **bash** para realizar pruebas de una manera mas rapida**  
+#### Añadir una nueva regla yara
+Implemente algunas reglas de yara que se pueden ver en el directorio del repositorio **addRules** el cual contiene varias reglas de yara ya cargadas en un curl para un manejo mas facil en el envio de peticiones al servidor. Tambien con el parametro `curl -u admin:root` para poder autenticarse \
+`acces toke rule`, `suspicious strings rule`, `acces_token_del_31enero2016` , `es_exploit` , son algunas de ellas.\
 ejemplo: 
 
 **`bash addRules/suspicious_strings.sh`**
@@ -226,7 +240,7 @@ curl --request POST \
   -u admin:root
 ```       
 #### Analizar un texto
-Tambien existe el directorio **analyzeTexts** que contiene scripts pero para analizar los textos ya con la autenticacion cargada
+Tambien existe el directorio **analyzeTexts** que contiene scripts pero para analizar los textos.
 ejemplo:
 **`bash analyzeTexts/analyze_token.sh`**
 ```console
@@ -249,7 +263,7 @@ ejemplo:
   }'
 ```
 #### Analizar un archivo
-En el directorio **analyzeTexts** se encuentran scripts para analizar un file donde se le debe pasar el path del archivo a mandar
+En el directorio **analyzeFiles** se encuentran scripts para analizar un file donde se le debe pasar el path del archivo a mandar, obviamente el mismo tiene que estar **creado** \
 ejemplo:
 **`bash analyzeTexts/defaultFile.sh`**
 ```console
@@ -260,7 +274,7 @@ ejemplo:
   curl -X POST \
     http://localhost:8080/api/analyze/file \
     -H 'content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' \
-    -F file='file=@/root/Escritorio/default_file.txt' \
+    -F file='@/root/Escritorio/default_file.txt' \
     -F 'rules=1,2'
 ```
 

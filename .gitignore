@@ -3,3 +3,6 @@ include
 lib
 lib64
 __pycache__
+.idea/
+_trial_temp/
+main.pyc

@@ -9,13 +9,6 @@ class BasicTests(unittest.TestCase):
         app.config['DEBUG'] = False
         self.app = app.test_client()
 
-    def test_main_page(self):
-        response_ok = {
-            "message": "guidoenr4 yara_challenge - meli"
-        }
-        response = requests.get('http://localhost:8080/')
-        self.assertEqual(response_ok, response.json())
-
     def test_get_rules_tests(self):
         response = requests.get('http://localhost:8080/rules', auth=('admin', 'root'))
         self.assertEqual(200, response.status_code)
@@ -147,3 +140,11 @@ class AnalyzeTextTest(unittest.TestCase):
         }
         response = requests.post('http://localhost:8080/api/analyze/text', json=text_data)
         self.assertEqual(response_ok, response.json())
+
+class AnalyzeFileTest(unittest.TestCase):
+
+    def test_the_file_has_a_dangerous_extension(self):
+        f = open("testfile.exe", "w")
+        f.close()
+        header = {'content - type': 'multipart / form - data; boundary = ----WebKitFormBoundary7MA4YWxkTrZu0gW'}
+        rules = 'rules=1,2'
