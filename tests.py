@@ -1,5 +1,6 @@
 import unittest, requests
 from main import app
+from rules import rulesList
 
 class BasicTests(unittest.TestCase):
 
@@ -9,7 +10,7 @@ class BasicTests(unittest.TestCase):
         app.config['DEBUG'] = False
         self.app = app.test_client()
 
-    def test_get_rules_tests(self):
+    def test_get_rules(self):
         response = requests.get('http://localhost:8080/rules', auth=('admin', 'root'))
         self.assertEqual(200, response.status_code)
 
@@ -25,28 +26,28 @@ class BasicTests(unittest.TestCase):
                              ' $my_text_string\r\n'
                              '}'}
         }
-        response = requests.get('http://localhost:8080/rules/defaultRule')
+        response = requests.get('http://localhost:8080/rules/defaultRule',auth=('admin', 'root'))
         self.assertEqual(data, response.json())
 
 class AddRulesTest(unittest.TestCase):
 
     def test_add_rule_without_autentication(self):
-        ruledata = {
+        rule_request = {
             "name": "access token rule",
             "rule": "rule AccesToken\r\n{\r\n strings:\r\n $a0 = \"TOKEN_\"\r\n $a1 = \"TOKEN\"\r\n condition:\r\n   any of them\r\n}"
         }
-        response = requests.post('http://localhost:8080/api/rule', auth=('user', 'normal'), data=ruledata)
+        response = requests.post('http://localhost:8080/api/rule', auth=('user', 'normal'), data=rule_request)
         self.assertEqual(401, response.status_code)
 
     def test_add_rule_with_autentication(self):
         rule_request = {
             'name': 'access token rule',
-            'rule': 'rule AccesToken\r\n{\r\n strings:\r\n $a0 = \"TOKEN_\"\r\n $a1 = \"TOKEN\"\r\n condition:\r\n   any of them\r\n}'
+            'rule': 'rule AccessToken\r\n{\r\n strings:\r\n $a0 = \"TOKEN_\"\r\n $a1 = \"TOKEN\"\r\n condition:\r\n   any of them\r\n}'
         }
         response_ok = {
             'id': 1,
             'name': "access token rule",
-            'rule': 'rule AccesToken\r\n{\r\n strings:\r\n $a0 = \"TOKEN_\"\r\n $a1 = \"TOKEN\"\r\n condition:\r\n   any of them\r\n}'
+            'rule': 'rule AccessToken\r\n{\r\n strings:\r\n $a0 = \"TOKEN_\"\r\n $a1 = \"TOKEN\"\r\n condition:\r\n   any of them\r\n}'
         }
 
         response = requests.post('http://localhost:8080/api/rule', auth=('admin', 'root'), json= rule_request)
@@ -68,15 +69,23 @@ class AddRulesTest(unittest.TestCase):
     def test_add_suspicious_strings_rule(self):
         rule_request = {
             'name': 'suspicious strings rule',
-            "rule":"rule SuspiciosStrings\r\n{\r\n strings:\r\n $a0 = \"backdoor\"\r\n $a1 = \"virus\"\r\n condition:\r\n   any of them\r\n}"
+            'rule': 'rule SuspiciousStrings\r\n{\r\n strings:\r\n $a0 = \"backdoor\"\r\n $a1 = \"virus\"\r\n condition:\r\n   any of them\r\n}'
         }
         response_ok = {
             'id': 2,
             'name': 'suspicious strings rule',
-            "rule":"rule SuspiciosStrings\r\n{\r\n strings:\r\n $a0 = \"backdoor\"\r\n $a1 = \"virus\"\r\n condition:\r\n   any of them\r\n}"
+            'rule': 'rule SuspiciousStrings\r\n{\r\n strings:\r\n $a0 = \"backdoor\"\r\n $a1 = \"virus\"\r\n condition:\r\n   any of them\r\n}'
         }
         response = requests.post('http://localhost:8080/api/rule', auth=('admin', 'root'), json=rule_request)
         self.assertEqual(response_ok, response.json())
+
+    def test_add_a_rule_that_exists(self):
+        rule_request = {
+            'name': 'defaultRule',
+            'rule': 'rule defaultRule\r\n{\r\n strings:\r\n $my_text_string = \"defaultrule\"\r\n condition:\r\n $my_text_string\r\n}'
+        }
+        response = requests.post('http://localhost:8080/api/rule', auth=('admin', 'root'), json=rule_request)
+        self.assertEqual(409, response.status_code)
 
 
 class AnalyzeTextTest(unittest.TestCase):
@@ -141,10 +150,5 @@ class AnalyzeTextTest(unittest.TestCase):
         response = requests.post('http://localhost:8080/api/analyze/text', json=text_data)
         self.assertEqual(response_ok, response.json())
 
-class AnalyzeFileTest(unittest.TestCase):
 
-    def test_the_file_has_a_dangerous_extension(self):
-        f = open("testfile.exe", "w")
-        f.close()
-        header = {'content - type': 'multipart / form - data; boundary = ----WebKitFormBoundary7MA4YWxkTrZu0gW'}
-        rules = 'rules=1,2'
+

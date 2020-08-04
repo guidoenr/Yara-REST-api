@@ -31,7 +31,8 @@ Curl de ejemplo:
       }' \
       -u user:password
 Donde el **user:password** es el usuario y contraseña (información en la seccion de autenticación).
-La funcion `addRule()` *line: 37 on main.py* al recibir una regla, si se puede agregar, la agrega y la compila en el momento para que ya quede lista para usar.
+La funcion `addRule()` *line: 37 on main.py* al recibir una regla, si se puede agregar, la agrega y la compila en el momento para que ya quede lista para usar. \
+Agregue una funcionalidad en esta funcion: al querer agregar una regla que ya existe, la misma no se agregara y retornara status code : **`409 Conflict`**
 
 
 #### Analyze Text
@@ -159,7 +160,7 @@ Para poder ver en tiempo real las respuestas del servidor, se debe ejecutar el c
 `docker logs -f melitest` \
 lo cual permite ver el historial de peticiones que le son enviadas al servidor, donde el mismo esta corriendo de fondo \
 Al estar iniciado el servidor, podes entrar a `http://localhost:8080` desde tu navegador y recibir una respuesta como esta:
-```json
+```python
 Hello, Friend :) Bienvenido al meli-challenge de Guido Enrique
 ```
 para verificar que el servidor esta corriendo y funcionando.. \
@@ -167,7 +168,8 @@ Luego de un tiempo determinado, podes finalizar el servidor con el comando \
 `docker stop melitest` \
 y liberar la conexion en el puerto 8080 \
 **OBS:** **al stopear el servidor, el mismo perdera todas las reglas que ya tiene cargadas, y quedara unicamente con su defaultRule**
-
+## Uso
+Para el uso del servidor se pueden usar varios sitios webs que arman solicitudes get/post con un formato las legible, pero para un uso mas rapido.. recomiendo usar **curl** y/o los scripts en bash en la seccion de extras.
 # Extras
 ## Logging - Autentication
 Implemente una autenticacion para ciertas rutas del sitio, como `/rules` [METHOD=GET] , y para `api/rule` [METHOD=POST] utilizando la libreria [HTTPBasicAuth](https://flask-httpauth.readthedocs.io/en/latest/) de Flask\
@@ -180,12 +182,7 @@ Las credenciales de accesos son las siguientes: *(user:password)*
   }
 ```
 ## TESTING - Python Unit Tests
-.\
-.\
-.\
-.\
-.\
-.
+Añadi varios Tests en el archivo tests.py
 
 
 ## Scripts en BASH (only on linux)

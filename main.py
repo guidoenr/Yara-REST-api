@@ -24,7 +24,8 @@ def verify_password(username, password):
 
 #-------------------------------------------------- GET -----------------------------------------#
 @app.route('/')
-def host(): #retorna un mensaje json para verificar que el sv anda
+def host():
+    print('Index returned Succesfuly')
     return "Hello, Friend :) Bienvenido al meli-challenge de Guido Enrique", 200
 
 @app.route('/rules', methods=['GET'])
@@ -32,7 +33,8 @@ def host(): #retorna un mensaje json para verificar que el sv anda
 def getRules():
     return jsonify(rulesList), 200
 
-@app.route('/rules/<string:rule_name>', methods=['GET']) # retorna una rule especifica, si no esta, retorna un message
+@app.route('/rules/<string:rule_name>', methods=['GET'])
+@auth.login_required()
 def getRule(rule_name):
     rulesFound = [rule for rule in rulesList if rule['name'] == rule_name] #barrido a la lista para ver la rule que piden
     if len(rulesFound) > 0:
@@ -51,14 +53,17 @@ def addRule(): # se borran cuando el server se reinicia
         return jsonify({'status': str(KeyError)}), 409
     else:
         id = len(rulesList)
-        new_rule={
+        new_rule = {
             'name': name,
             'rule': rule,
             'id': id
         }
-        rulesList.append(new_rule)
-        compileRule(new_rule['rule'])
-        return jsonify({'id': id, 'name': new_rule['name'], 'rule': new_rule['rule']}), 201
+        if the_rule_already_exist(name):
+            return "The rule " + name + "already exist", 409
+        else:
+            rulesList.append(new_rule)
+            compileRule(new_rule['rule'])
+            return jsonify({'id': id, 'name': new_rule['name'], 'rule': new_rule['rule']}), 201
 
 @app.route('/api/analyze/text', methods = ['POST'])
 def analyzeText():
@@ -92,6 +97,13 @@ def analyzeFile():
         return responseBody, 200
 
 #--------------------------------------------------TOOLS-------------------------------------------#
+def the_rule_already_exist(rulename):
+    for rule in rulesList:
+        if rule['name'] == rulename:
+            return True
+    return False
+
+
 def compileRule(rule):
     try:
         rules = yara.compile(source=rule)
@@ -106,12 +118,9 @@ def loadCurrentRules():
         print("Error loading the  current rules")
 
 def findRuleById(id):
-    i=0
     for rule in rulesList:
-        rule = rulesList[i]
         if rule['id'] == id:
             return rule['rule']
-        i+=1
 
 def compileCurrentRules():
     for element in rulesList:
@@ -122,7 +131,7 @@ def compileCurrentRules():
 
 def theTextPassTheRule(text, rule_id):
     rule = findRuleById(rule_id)
-    if (rule == None):
+    if rule == None:
         return {'rule_id': rule_id, 'matched': 'error', 'cause': 'the rule ' + str(rule_id) + ' doesnt exist'}
     else:
         rules = yara.compile(source=rule)

@@ -6,6 +6,7 @@ curl --request POST \
   --header 'content-type: application/json' \
   --data '{
   "name":"old token rule",
-  "rule":"rule oldToken\r\n{\r\n strings:\r\n $a0 = \"2016-02\"\r\n $a1 = \"2016-01-31\"\r\n $a1 = \"2017-\"\r\n $a2 = \"2018-\"\r\n $a3 = \"2019-\"\r\n $a4 = \"2020-\"\r\n condition:\r\n   any of them\r\n}"
+  "rule":"rule OldToken\r\n{\r\n strings:\r\n $a0 = \"2016-02\"\r\n $a1 = \"2016-01-31\"\r\n $a1 = \"2017-\"\r\n $a2 = \"2018-\"\r\n $a3 = \"2019-\"\r\n $a4 = \"2020-\"\r\n condition:\r\n   any of them\r\n}"
   }' \
   -u admin:root
+
