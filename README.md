@@ -3,6 +3,10 @@
 Implemente una **[API-REST](https://es.wikipedia.org/wiki/Transferencia_de_Estado_Representacional)** usando **Python3.8** con **Pycharm IDE** de Jetbrains.
 La api funciona a costas de **[Flask](https://flask.palletsprojects.com/en/1.1.x/)** un framework escrito en python que permite crear un backend para un website para poder recibir y manipular requests.
 El script levanta un server en el `http://localhost:8080` de quien lo ejecute. La finalidad de este website es poder subir reglas de Yara, verlas mediante una peticion `GET`, poder mandar peticiones `POST` para hacer varias cosas, tales como analizar un archivo, analizar un texto, o hasta incluso añadir una nueva regla de yara.
+**OBS**: Tengo otra resolución ademas de esta que es mas "estatica" digamosle, en la que las reglas de yara son guardadas con un archivo .txt y pueden agregarse al servidor y quedar guardadas, para luego poder compilarlas.
+Les presento esta resolucion, porque me parecio la mas dinamica en el sentido de añadir nuevas reglas al sitio, puesto que cuando las mismas son agregadas son compiladas al instante. Las reglas no quedan guardadas estaticamente en el servidor, sino que son guardadas dinamicamente hasta que el servidor muere.
+
+
 Cuenta con las siguientes rutas de acceso:
 
 ## Method: GET
