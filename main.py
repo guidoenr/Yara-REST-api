@@ -1,11 +1,11 @@
 #@autor : github.com/guidoenr4
 
-import os, ast
-import yara
+import os, ast, yara
 from flask import Flask, jsonify, request
 from rules import rulesList
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import generate_password_hash, check_password_hash
+#-------------------------------------------------- CLASS ------------------------#
 app = Flask(__name__)
 auth = HTTPBasicAuth()
 
@@ -25,7 +25,6 @@ def verify_password(username, password):
 #-------------------------------------------------- GET -----------------------------------------#
 @app.route('/')
 def host():
-    print('Index returned Succesfuly')
     return "Hello, Friend :) Bienvenido al meli-challenge de Guido Enrique", 200
 
 @app.route('/rules', methods=['GET'])
@@ -36,9 +35,9 @@ def getRules():
 @app.route('/rules/<string:rule_name>', methods=['GET'])
 @auth.login_required()
 def getRule(rule_name):
-    rulesFound = [rule for rule in rulesList if rule['name'] == rule_name] #barrido a la lista para ver la rule que piden
+    rulesFound = [rule for rule in rulesList if rule['name'] == rule_name] 
     if len(rulesFound) > 0:
-        return jsonify({'rule': rulesFound[0]}), 200 # retorno la rule encontrada
+        return jsonify({'rule': rulesFound[0]}), 200 
     else:
         return jsonify({'message': "Rule not found"}), 404
 
@@ -131,12 +130,12 @@ def compileCurrentRules():
 
 def theTextPassTheRule(text, rule_id):
     rule = findRuleById(rule_id)
-    if rule == None:
+    if rule is None:
         return {'rule_id': rule_id, 'matched': 'error', 'cause': 'the rule ' + str(rule_id) + ' doesnt exist'}
     else:
         rules = yara.compile(source=rule)
         filepath = text + '.txt'
-        f = open(filepath, 'w') #yara si o si te obliga a hacer un file, no lo podes hacer con un string de python
+        f = open(filepath, 'w')
         f.write(text)
         f.close()
         match = rules.match(filepath)
