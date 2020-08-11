@@ -1,11 +1,14 @@
 # Resolucion (yara-api challenge mercadolibre guidoenr4) 
+### version : 1
 
-Implemente una **[API-REST](https://es.wikipedia.org/wiki/Transferencia_de_Estado_Representacional)** usando **Python3.8** con **Pycharm IDE** de Jetbrains.
-La api funciona a costas de **[Flask](https://flask.palletsprojects.com/en/1.1.x/)** un framework escrito en python que permite crear un backend para un website para poder recibir y manipular requests.
-El script levanta un server en el `http://localhost:8080` de quien lo ejecute. La finalidad de este website es poder subir reglas de Yara, verlas mediante una peticion `GET`, poder mandar peticiones `POST` para hacer varias cosas, tales como analizar un archivo, analizar un texto, o hasta incluso añadir una nueva regla de yara.
-**OBS**: Tengo otra resolución ademas de esta que es mas "estatica" digamosle, en la que las reglas de yara son guardadas con un archivo .txt y pueden agregarse al servidor y quedar guardadas, para luego poder compilarlas.
-Les presento esta resolucion, porque me parecio la mas dinamica en el sentido de añadir nuevas reglas al sitio, puesto que cuando las mismas son agregadas son compiladas al instante. Las reglas no quedan guardadas estaticamente en el servidor, sino que son guardadas dinamicamente hasta que el servidor muere.
+Implemente una **[API-REST](https://es.wikipedia.org/wiki/Transferencia_de_Estado_Representacional)** usando **Python3.8**.
+La api funciona a costas de **[Flask](https://flask.palletsprojects.com/en/1.1.x/)** un framework escrito en python que permite crear un backend para un website para poder recibir y manipular requests, entre otras cosas.
+El script levanta un server en el `http://localhost:8080` de quien lo ejecute. La finalidad de este website es poder interactuar con el sitio en tiempo real, realizando varias peticiones al mismo. Cuenta con varias funcionalidades, tales como analizar un archivo, analizar un texto, o hasta incluso añadir una nueva regla de yara.
 
+**OBS**: Esta es la **version:1**.. tengo otra resolución ademas de esta que es mas "estatica" digamosle, en la que las reglas de yara son guardadas con un archivo `.txt` y asi quedan guardadas, para luego poder compilarlas.
+Les presento esta resolucion, porque me parecio la mas dinamica en el sentido de añadir nuevas reglas al sitio y realizar "tests" en tiempo real, puesto que cuando las mismas son agregadas son compiladas al instante. Las reglas no quedan guardadas estaticamente en el servidor, sino que son guardadas dinamicamente hasta que el servidor muere (*excepto la defaultRule*). La **version:2** implementa methods del estilo `DELETE` para eliminar estas reglas, lo cual lo hace engorroso al momento de testear el funcionamiento, pero si, gana en tiempo de ejecucón, porque al querer analizar un archivo o un texto no debo re-compilar las reglas que se quieren matchear para el mismo.
+
+# Documentación
 
 Cuenta con las siguientes rutas de acceso:
 
