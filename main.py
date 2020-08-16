@@ -50,7 +50,6 @@ def getRules():
 def getRule(rule_name):
     with open(rulesPath, 'r') as ruleslist:
         data = json.load(ruleslist)
-        ruleslist.close()
     rulesFound = [rule for rule in data if rule['name'] == rule_name]
     if len(rulesFound) > 0:
         return jsonify({'rule': rulesFound[0]}), 200
@@ -99,6 +98,9 @@ def analyzeFile():
     else:
         checkRules()
         return theFilePassTheRules(file, rulesIds)
+
+# ------------------------------------------------- DELETE ------------------------------------------#
+
 
 
 # --------------------------------------------------TOOLS-------------------------------------------#
