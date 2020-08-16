@@ -244,6 +244,42 @@ rule OldTokenRule
 ```
 
 Las demas reglas que vienen cargadas son **SuspiciousStringsRule**, **EstoNoEsCocaPapiRule** y **DefaultRule** que no tienen nada en especial mas que una verificacion si existen **x** strings.
+## Python Unit Tests
+Hay varios tests en **`tests.py`** que prueban las funcionalidades del servidor, como añadir reglas, analizar textos, y demas.
+Con un **86%** de lineas testeadas segun Coverage.\
+Algunos ejemplos:
+```python
+def setUp(self):
+    app.config['TESTING'] = True
+    app.config['WTF_CSRF_ENABLED'] = False
+    app.config['DEBUG'] = False
+    self.app = app.test_client()
+
+def test_add_rule_with_authentication(self):
+    rule_request = {
+        'name': 'a new rule',
+        'rule': 'rule ANewRule\r\n{\r\n strings:\r\n $a0 = \"NewRule\"\r\n condition:\r\n   $a0\r\n}'
+    }
+    response_ok = {
+        'id': 5,
+        'name': "a new rule",
+        'rule': 'rule ANewRule\r\n{\r\n strings:\r\n $a0 = \"NewRule\"\r\n condition:\r\n   $a0\r\n}'
+    }
+
+def test_the_text_is_a_token(self):
+    text_data = {
+        "text": "TOKEN_2014-06-03_112332",
+        "rules": [{"rule_id": 1}]
+    }
+    response_ok = {
+        'status': 'ok',
+        'results': [{'rule_id': 1, 'matched': True}]
+    }
+    response = requests.post('http://localhost:8080/api/analyze/text', json=text_data)
+    self.assertEqual(response_ok, response.json())
+
+
+```
 
 ## Scripts en BASH (solo en linux)
 **El repositorio cuenta con 3 carpetas en el directorio /bash-scripts: `addRules/` , `analyzeFiles/` y `analyzeTexts/` que contienen scripts escritos en **bash** para realizar pruebas de una manera mas rapida.**\

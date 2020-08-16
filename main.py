@@ -13,7 +13,7 @@ rulesPath = '/root/workspace/challenge_yara_guidoenr4/rules/rules.json'
 savedRulesPath = '/root/workspace/challenge_yara_guidoenr4/rules/saved_rules.yara'
 workspacePath = '/root/workspace/challenge_yara_guidoenr4'
 
-# --------------------------------------------------LOGGIN- AUTENTICATION ------------------------#
+# --------------------------------------------------LOGGIN- AUTHENTICATION ------------------------#
 
 users = {
     'admin': generate_password_hash('root'),
@@ -190,15 +190,15 @@ def matchResult(id, matches):
         return {"matched": "error", "cause": "the rule " + str(id) + " doesnt exist"}
     else:
         if matches.__contains__(rule):
-            return {"rule_id": str(id), "matched": True}
+            return {"rule_id": id, "matched": True}
         else:
-            return {"rule_id": str(id), "matched": False}
+            return {"rule_id": id, "matched": False}
 
 
 def matchResults(rulesids, matches):
-    results = []
+    results = {'results': []}
     for id in rulesids:
-        results.append(matchResult(id, matches))
+        results['results'].append(matchResult(id, matches))
     return jsonify(results)
 
 
