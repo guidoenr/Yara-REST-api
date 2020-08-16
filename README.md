@@ -41,6 +41,7 @@ Curl de ejemplo:
 Donde el **user:password** es el usuario y contraseña (información en la seccion de autenticación).
 La funcion `addRule()` *line: 37 on main.py* al recibir una regla, si se puede agregar, la agrega y la compila en el momento para que ya quede lista para usar. \
 Agregue una funcionalidad en esta funcion: al querer agregar una regla que ya existe, la misma no se agregara y retornara status code : **`409 Conflict`**
+El formato para las reglas debe ser un name en minusculas al estilo: `name: una nueva regla` y `rule: rule UnaNuevaRegla`.. para el correcto funcionamiento del sv
 
 
 #### Analyze Text
