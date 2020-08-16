@@ -9,8 +9,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # -------------------------------------------------- CLASS ------------------------#
 app = Flask(__name__)
 auth = HTTPBasicAuth()
-rulesPath = '/root/workspace/threathunter_meli_challenge_v2/rules/rules.json'
-savedRulesPath = '/root/workspace/threathunter_meli_challenge_v2/rules/saved_rules.yara'
+rulesPath = '/root/workspace/challenge_yara_guidoenr4/rules/rules.json'
+savedRulesPath = '/root/workspace/challenge_yara_guidoenr4/rules/saved_rules.yara'
 workspacePath = '/root/workspace/challenge_yara_guidoenr4'
 
 # --------------------------------------------------LOGGIN- AUTENTICATION ------------------------#
@@ -237,5 +237,5 @@ def theFilePassTheRules(file, rulesids):
 
 rules = loadCurrentRules()
 if __name__ == '__main__':
-    os.chdir('/root/workspace/threathunter_meli_challenge_v2')
+    os.chdir('/root/workspace/challenge_yara_guidoenr4')
     app.run(debug=False, port=8080, host="0.0.0.0")
