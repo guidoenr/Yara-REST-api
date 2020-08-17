@@ -43,7 +43,7 @@ La funcion `addRule()` *line: 37 on main.py* al recibir una regla, si se puede a
 Agregue una funcionalidad en esta funcion: al querer agregar una regla que ya existe, la misma no se agregara y retornara status code : **`409 Conflict`** \
 El formato para las reglas debe ser el siguiente: \
 **`name: una nueva regla`** \
-**`rule: rule UnaNuevaReglaRule[..]` **
+**`rule: rule UnaNuevaReglaRule[..]`**
 
 
 #### Analyze Text
