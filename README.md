@@ -40,8 +40,10 @@ Curl de ejemplo:
       -u user:password
 Donde el **user:password** es el usuario y contraseña (información en la seccion de autenticación).
 La funcion `addRule()` *line: 37 on main.py* al recibir una regla, si se puede agregar, la agrega y la compila en el momento para que ya quede lista para usar. \
-Agregue una funcionalidad en esta funcion: al querer agregar una regla que ya existe, la misma no se agregara y retornara status code : **`409 Conflict`**
-El formato para las reglas debe ser un name en minusculas al estilo: `name: una nueva regla` y `rule: rule UnaNuevaRegla`.. para el correcto funcionamiento del sv
+Agregue una funcionalidad en esta funcion: al querer agregar una regla que ya existe, la misma no se agregara y retornara status code : **`409 Conflict`** \
+El formato para las reglas debe ser el siguiente: \
+**`name: una nueva regla`** \
+**`rule: rule UnaNuevaReglaRule[..]` **
 
 
 #### Analyze Text
@@ -249,6 +251,7 @@ Las demas reglas que vienen cargadas son **SuspiciousStringsRule**, **EstoNoEsCo
 Hay varios tests en **`tests.py`** que prueban las funcionalidades del servidor, como añadir reglas, analizar textos, y demas.
 Con un **86%** de lineas testeadas segun Coverage.\
 Algunos ejemplos:
+
 ```python
 def setUp(self):
     app.config['TESTING'] = True
@@ -266,19 +269,30 @@ def test_add_rule_with_authentication(self):
         'name': "a new rule",
         'rule': 'rule ANewRule\r\n{\r\n strings:\r\n $a0 = \"NewRule\"\r\n condition:\r\n   $a0\r\n}'
     }
+    
+def test_the_token_is_older_than_january_2016(self):
+        text_data = {
+            "text": "TOKEN_2017-06-03_112332",
+            "rules": [{"rule_id": 1}]
+        }
+        response_ok = {
+            'status': 'ok',
+            'results': [{'rule_id': 1, 'matched': True}]
+        }
+        response = requests.post('http://localhost:8080/api/analyze/text', json=text_data)
+        self.assertEqual(response_ok, response.json())
 
-def test_the_text_is_a_token(self):
-    text_data = {
-        "text": "TOKEN_2014-06-03_112332",
-        "rules": [{"rule_id": 1}]
-    }
-    response_ok = {
-        'status': 'ok',
-        'results': [{'rule_id': 1, 'matched': True}]
-    }
-    response = requests.post('http://localhost:8080/api/analyze/text', json=text_data)
-    self.assertEqual(response_ok, response.json())
-
+def test_the_text_is_a_virus(self):
+        text_data = {
+            "text": "virus",
+            "rules": [{"rule_id": 2}]
+        }
+        response_ok = {
+            'status': 'ok',
+            'results': [{'rule_id': 2, 'matched': True}]
+        }
+        response = requests.post('http://localhost:8080/api/analyze/text', json=text_data)
+        self.assertEqual(response_ok, response.json())
 
 ```
 
