@@ -99,11 +99,8 @@ def analyzeFile():
         checkRules()
         return theFilePassTheRules(file, rulesIds)
 
-# ------------------------------------------------- DELETE ------------------------------------------#
-
-
-
 # --------------------------------------------------TOOLS-------------------------------------------#
+
 def checkRules():
     if theFileIsEmpty(savedRulesPath):
         return jsonify({'status:': 'there are no rules '}), 404
@@ -196,10 +193,10 @@ def matchResult(id, matches):
 
 
 def matchResults(rulesids, matches):
-    results = {'results': []}
+    results = {'status': 'ok', 'results': []}
     for id in rulesids:
         results['results'].append(matchResult(id, matches))
-    return jsonify(results)
+    return json.dumps(results, indent = 4)
 
 
 def toStr(matchrules):
@@ -231,7 +228,7 @@ def theTextPassTheRules(text, ruleslist):
 
 def theFilePassTheRules(file, rulesids):
     if theFileIsEmpty(savedRulesPath):
-        return jsonify({'status': 'there are no rules'}), 404
+        return json.dumps({'status': 'there are no rules'}, indent = 4), 404
     else:
         matches = toStr(rules.match(data=file.read()))
         return matchResults(rulesids, matches), 200

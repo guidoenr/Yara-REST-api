@@ -321,4 +321,8 @@ En el caso de analisis de archivos hay un `file.txt` en el directorio `analyzeFi
 - Existe un script opcional con el nombre `bash-scripts/clean-rules.sh` que trunca los archivos que contienen las reglas del servidor para borrarlas(el mismo puede ser activado si se corre el servidor con el comando de docker interactivo `docker run -it` )
 - La REST-API fue testeada en Kali-Linux y Windows7 sin errores.
 - La version 2 , como mencione al principio, esta disponible en mis repositorios de github
+<<<<<<< HEAD
+- Para las respuestas en una terminal, se utiliza la funcion `json.dumps(indent=4)` lo cual permite un PrettyPrint, a diferencia de las peticiones hechas directamente desde el navegador, que usan la funcion `jsonify`.
+=======
 - Las credenciales de loggin son hasheadas.
+>>>>>>> 6346f49c31feeb879531e16f36dfc1b8047f40a7
