@@ -1,8 +1,14 @@
 import unittest, requests
-from main import app
+from main import app, rulesPath, json, rules, loadCurrentRules, Bcolors
+
+with open(rulesPath, 'r') as json_rules:
+    data = json.load(json_rules)
 
 # Los tests compilan con el status default del servidor (5 reglas cargadas)
 
+
+
+# ------------------------------------------- TESTS --------------------------------------------- #
 class BasicTests(unittest.TestCase):
 
     def setUp(self):
@@ -10,6 +16,7 @@ class BasicTests(unittest.TestCase):
         app.config['WTF_CSRF_ENABLED'] = False
         app.config['DEBUG'] = False
         app.test_client()
+
 
     def test_get_rules(self):
         response = requests.get('http://localhost:8080/rules', auth=('admin', 'root'))
@@ -30,6 +37,9 @@ class BasicTests(unittest.TestCase):
         }
         response = requests.get('http://localhost:8080/rules/credit card rule', auth=('admin', 'root'))
         self.assertEqual(responseBody,response.json())
+
+    def tearDown(self) -> None:
+        restoreData()
 
 class AddRulesTest(unittest.TestCase):
 
@@ -68,6 +78,10 @@ class AddRulesTest(unittest.TestCase):
         response = requests.post('http://localhost:8080/api/rule', auth=('normalUser', '1234'), json= rule_request)
         self.assertEqual(401, response.status_code) # 401 Unauthorized
 
+    def tearDown(self) -> None:
+        def tearDown(self) -> None:
+            restoreData()
+
 class AnalyzeTextTest(unittest.TestCase):
 
     def setUp(self):
@@ -79,7 +93,7 @@ class AnalyzeTextTest(unittest.TestCase):
     def test_the_text_is_secure(self):
         text_data = {
             "text": "esto es un texto a analizar",
-            "rules": [{"rule_id": 0}, {"rule_id": 1}]
+            "rules": [{"rule_id": 0}]
         }
         response_ok = {
             'status': 'ok',
@@ -91,11 +105,11 @@ class AnalyzeTextTest(unittest.TestCase):
     def test_the_text_is_a_token(self):
         text_data = {
             "text": "TOKEN_2014-06-03_112332",
-            "rules": [{"rule_id": 1}]
+            "rules": [{"rule_id": 3}]
         }
         response_ok = {
             'status': 'ok',
-            'results': [{'rule_id': 1, 'matched': True}]
+            'results': [{'rule_id': 3, 'matched': True}]
         }
         response = requests.post('http://localhost:8080/api/analyze/text', json=text_data)
         self.assertEqual(response_ok, response.json())
@@ -103,11 +117,11 @@ class AnalyzeTextTest(unittest.TestCase):
     def test_the_token_is_older_than_january_2016(self):
         text_data = {
             "text": "TOKEN_2017-06-03_112332",
-            "rules": [{"rule_id": 1}]
+            "rules": [{"rule_id": 4}]
         }
         response_ok = {
             'status': 'ok',
-            'results': [{'rule_id': 1, 'matched': True}]
+            'results': [{'rule_id': 4, 'matched': True}]
         }
         response = requests.post('http://localhost:8080/api/analyze/text', json=text_data)
         self.assertEqual(response_ok, response.json())
@@ -127,11 +141,26 @@ class AnalyzeTextTest(unittest.TestCase):
     def test_the_text_is_a_virus(self):
         text_data = {
             "text": "virus",
-            "rules": [{"rule_id": 2}]
+            "rules": [{"rule_id": 0}]
         }
         response_ok = {
             'status': 'ok',
-            'results': [{'rule_id': 2, 'matched': True}]
+            'results': [{'rule_id': 0, 'matched': True}]
         }
         response = requests.post('http://localhost:8080/api/analyze/text', json=text_data)
         self.assertEqual(response_ok, response.json())
+
+    def tearDown(self) -> None:
+        def tearDown(self) -> None:
+            restoreData()
+
+# ------------------------------------------- TEARDOWN TOOLS --------------------------------------------- #
+
+def restoreData():
+    with open(rulesPath, 'w') as initData:
+        json.dump(data, initData, indent = 4)
+    rules = loadCurrentRules()
+    print(Bcolors.CBEIGE + '[INFO]: Restored data' + Bcolors.ENDC)
+
+if __name__ == '__main__':
+    unittest.main()

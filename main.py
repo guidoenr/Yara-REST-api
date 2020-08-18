@@ -1,10 +1,12 @@
 # @autor : github.com/guidoenr4
 
 import os, ast, yara, json
-
+from bcolors import Bcolors
 from flask import Flask, jsonify, request
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import generate_password_hash, check_password_hash
+
+
 
 # -------------------------------------------------- CLASS ------------------------#
 app = Flask(__name__)
@@ -131,7 +133,7 @@ def addRuleToTheFile(name, rule):
             data.append(new_rule)
             with open(rulesPath, 'w') as writefile:
                 json.dump(data, writefile, indent=3)
-            print('\033[92m [INFO]: New rule -> ' + name + ' added succesfuly')
+            print(Bcolors.CGREEN + '[INFO]: New rule -> ' + name + ' added succesfuly' + Bcolors.ENDC)
             rules = loadCurrentRules()
             return jsonify(new_rule), 201
 
@@ -156,7 +158,7 @@ def theRuleExist(rulename):
 
 def loadCurrentRules():
     if theFileIsEmpty(rulesPath):
-        print("\033[93m [WARNING]: There are no rules in rules.json")
+        print(Bcolors.WARNING + "[WARNING]: There are no rules in rules.json" + Bcolors.ENDC)
     else:
         with open(rulesPath, "r") as currentRules:
             data = json.load(currentRules)
@@ -164,7 +166,7 @@ def loadCurrentRules():
             savedrules.truncate(0)
             for rule in data:
                 savedrules.write(rule["rule"] + '\n\n')
-        print('\033[92m [INFO]: ' + str(len(data)) + ' rules compiled succesfuly')
+        print(Bcolors.OKGREEN + '[INFO]: ' + str(len(data)) + ' rules compiled succesfuly' + Bcolors.ENDC)
         return compileCurrentRules()
 
 
@@ -184,7 +186,7 @@ def compileCurrentRules():
 def matchResult(id, matches):
     rule = findRuleById(id)
     if rule is None:
-        return {"matched": "error", "cause": "the rule " + str(id) + " doesnt exist"}
+        return {"matched": "error", "cause": "the rule " + str(id) + " doesnt exist", "rule_id": id}
     else:
         if matches.__contains__(rule):
             return {"rule_id": id, "matched": True}
