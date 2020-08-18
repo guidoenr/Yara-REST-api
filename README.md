@@ -13,7 +13,7 @@ Les presento esta que tal vez cumple mas con los requerimientos del enunciado.
 
 Cuenta con las siguientes rutas de acceso:
 
-### Method: GET
+## Method: GET
 **Index** \
 `http://localhost:8080` 
 
@@ -128,7 +128,7 @@ try:
 
 # Instalación
 
-Implemente [Docker](https://www.docker.com/) para que la API-REST pueda ser corrida en cualquier sistema operativo. Cree una [imagen de docker](https://hub.docker.com/repository/docker/guidoenr4/yara-python-3.8) que contiene **python3.8** y algunas librerias de python (como yara) que son necesarias para correr este código.
+Implemente [Docker](https://www.docker.com/) para que la API-REST pueda ser ejecutada en cualquier sistema operativo. Cree una [imagen de docker](https://hub.docker.com/repository/docker/guidoenr4/yara-python-3.8) que contiene **python3.8** y algunas librerias de python (como yara) que son necesarias para correr este código.
 
 **Dockerfile:**
 ```python
@@ -145,51 +145,50 @@ ENTRYPOINT ["python3","main.py"]
 ```
 ## Pasos
 
-#### 1: Docker
-Instalar [Docker](https://www.docker.com/) (guia disponible en el website)
+1. **Instalar [Docker](https://www.docker.com/) (guia disponible en el website oficial)**
 
-#### 2: Descargar el repositorio
-Descargar el repositorio mediante un: 
-
-**`git clone https://github.com/irt-mercadolibre/challenge_yara_guidoenr4`** 
-
-o simplemente descargar el `.zip` y extraerlo
-
-#### 3: Compilar el proyecto mediante docker
-Una vez instalado docker y clonado el repositorio, correr el comando: 
-
-**`docker build -t melichallenge .`** 
-
-dentro del directorio donde fue descargado el repositorio (`cd challenge_yara_guidoenr4`), para poder compilarlo y descargar las imagenes y librerias necesarias automaticamente.
-
-#### 4: Correr el proyecto
-Al estar compilado se puede correr de varias formas, la que yo recomiendo es correrla con el comando: 
-
-**`docker run -d -p 8080:8080 --name melitest melichallenge`**
-
-donde el servidor corre de fondo, lo cual en este caso es util puesto que es un servidor y queremos tenerlo levantado para hacer las correspondientes pruebas. \
-el `PUERTOLOCAL=8080` es un puerto aleatorio que debe elegir el cliente para poder hacer el mapeo de puertos (primer parametro), y el `8080` es el default del script. \
-**recomiendo usar el puerto 8080** para poder acceder desde su navegador a `localhost:8080` y ademas , poder correr los tests que envian peticiones a ese puerto
-
-
-#### 5: Ver las respuestas del servidor
-Para poder ver en tiempo real las respuestas del servidor, se debe ejecutar el comando: 
-
-**`docker logs -f melitest`**
+2.  **Descargar el repositorio**
+    - **`git clone https://github.com/irt-mercadolibre/challenge_yara_guidoenr4`** 
+    - o simplemente descargar el `.zip` y extraerlo 
  
-lo cual permite ver el historial de peticiones que le son enviadas al servidor, donde el mismo esta corriendo de fondo \
-Al estar iniciado el servidor, se puede acceder **`http://localhost:8080`** desde tu navegador y recibir una respuesta como esta:
+3. **Limpiar / Mantener las rules**
+    - Si se quiere compilar el website sin rules, ejecutar el script: \
+     **`bash bash-scripts/clean-rules.sh`** \
+     que trunca los archivos que contiene las rules de yara ya existentes permitiendo que el mismo quede con 0 rules.
+    - En caso de que se quiera mantener las rules, omitir este paso.
+
+4. **Compilar el proyecto (dentro del directorio del repositorio)**
+    - **`docker build -t melichallenge .`** 
+ 
+5. **Correr el proyecto**
+   - Se puede correr de varias formas, **la forma que yo recomiendo** es utilizando el comando: \
+    **`docker run -d -p 8080:8080 --name melitest melichallenge`** \
+    donde el servidor corre de fondo, lo cual en este caso es util puesto que queremos tenerlo levantado para hacer las correspondientes pruebas. 
+   - En caso de no querer usar el puerto **8080** se debe realizar el mapeo de puertos correspondientes de la siguiente manera: \
+   **`docker run -d -p PUERTO:8080 --name melitest melichallenge`** \
+    donde el parametro `PUERTO` es un puerto que debe elegir el cliente para poder hacer el mapeo y luego acceder a ese puerto en lugar del  8080
+          
+6. **Ver las respuestas del servidor**
+    - Mediante docker, al estar el servidor corriendo de fondo, se puede ejecutar el comando :\
+    **`docker logs -f melitest`**\
+    para poder ver el historial de peticiones enviadas al servidor en tiempo real.
+    - Tambien se puede acceder a **`http://localhost:8080`** y verlo en el navegador que quieras
+
+7. **Verificar el funcionamiento**
+    - Al estar iniciado el servidor, se puede acceder **`http://localhost:8080`** desde tu navegador y recibir una respuesta como esta:
 ```python
 Hello, Friend :) Bienvenido al meli-challenge de Guido Enrique
 ```
-para verificar que el servidor esta corriendo y funcionando. 
 
-#### 6: Detener el servidor
-Luego de un tiempo determinado, podes finalizar el servidor con el comando: 
+**Detener el servidor** 
+- Luego de un tiempo determinado, podes finalizar el servidor con el comando:\
+    **`docker stop melitest`**\
+    y liberar la conexion en el puerto 8080. Al detener el servidor, las reglas quedaran guardadas en **`rules/saved_rules.yara`** y al iniciar el servidor nuevamente las mismas se compilaran        
+    
 
-**`docker stop melitest`**
 
-y liberar la conexion en el puerto 8080. Al detener el servidor, las reglas quedaran guardadas en **`rules/saved_rules.yara`** y al iniciar el servidor las mismas se compilaran
+
+
 
 
 ## Uso
@@ -230,7 +229,7 @@ rule CreditCardRule
 {
   strings:
     $a0 = /[0-9]{4}(-)?[0-9]{4}(-)?[0-9]{4}(-)?[0-9]{4}/
-  condition:
+  condition: 
     $a0
 }
 ```
@@ -269,6 +268,8 @@ def test_add_rule_with_authentication(self):
         'name': "a new rule",
         'rule': 'rule ANewRule\r\n{\r\n strings:\r\n $a0 = \"NewRule\"\r\n condition:\r\n   $a0\r\n}'
     }
+    response = requests.post('http://localhost:8080/api/rule', auth=('admin', 'root'), json= rule_request)
+    self.assertEqual(response_ok, response.json())
     
 def test_the_token_is_older_than_january_2016(self):
         text_data = {
@@ -318,11 +319,8 @@ ejemplos:
 - Estos scripts estan hardcodeados con `rules_id` y `texts` al azar, los hice yo para probar el servidor.
 En el caso de analisis de archivos hay un `file.txt` en el directorio `analyzeFiles/` con un texto al azar y en su mismo script esta hardcodeado su path en `file=@/root/workspace/challenge_yara_guidoenr4/analyzeFiles/file.txt`
 - El servidor cuenta con varias funcionalidades mas, tales como logs de ciertas cosas , que se pueden ver en el funcionamiento del mismo.
-- Existe un script opcional con el nombre `bash-scripts/clean-rules.sh` que trunca los archivos que contienen las reglas del servidor para borrarlas(el mismo puede ser activado si se corre el servidor con el comando de docker interactivo `docker run -it` )
 - La REST-API fue testeada en Kali-Linux y Windows7 sin errores.
-- La version 2 , como mencione al principio, esta disponible en mis repositorios de github
-<<<<<<< HEAD
-- Para las respuestas en una terminal, se utiliza la funcion `json.dumps(indent=4)` lo cual permite un PrettyPrint, a diferencia de las peticiones hechas directamente desde el navegador, que usan la funcion `jsonify`.
-=======
-- Las credenciales de loggin son hasheadas.
->>>>>>> 6346f49c31feeb879531e16f36dfc1b8047f40a7
+- La version 2 , como mencione al principio, esta disponible en mis repositorios de github.
+- Para las respuestas en una terminal, se utiliza la funcion `json.dumps(indent=4)` lo cual permite un PrettyPrint, a diferencia de las peticiones hechas directamente desde el navegador, que usan la funcion `jsonify`. Esto quiere decir que si se hacen peticiones POST tales como **addRule** en un sitio web alterno a la terminal, la respuesta del servidor, a pesar de ser correcta, no sera tan legible. 
+
+

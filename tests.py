@@ -57,7 +57,6 @@ class AddRulesTest(unittest.TestCase):
             'name': "a new rule",
             'rule': 'rule ANewRule\r\n{\r\n strings:\r\n $a0 = \"NewRule\"\r\n condition:\r\n   $a0\r\n}'
         }
-
         response = requests.post('http://localhost:8080/api/rule', auth=('admin', 'root'), json= rule_request)
         self.assertEqual(response_ok, response.json())
 
