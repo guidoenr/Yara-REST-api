@@ -326,5 +326,5 @@ En el caso de analisis de archivos hay un `file.txt` en el directorio `analyzeFi
 - La REST-API fue testeada en Kali-Linux y Windows7 sin errores.
 - La version 2 , como mencione al principio, esta disponible en mis repositorios de github.
 - Para las respuestas en una terminal, se utiliza la funcion `json.dumps(indent=4)` lo cual permite un PrettyPrint, a diferencia de las peticiones hechas directamente desde el navegador, que usan la funcion `jsonify`. Esto quiere decir que si se hacen peticiones POST tales como **addRule** en un sitio web alterno a la terminal, la respuesta del servidor, a pesar de ser correcta, no sera tan legible. 
-- Los tests 
+- Los tests estan pensados con el status default del servidor, es posible que no corran si hay inconsistencias con los datos.
 
