@@ -249,7 +249,11 @@ Las demas reglas que vienen cargadas son **SuspiciousStringsRule**, **EstoNoEsCo
 ## Python Unit Tests
 Hay varios tests en **`tests.py`** que prueban las funcionalidades del servidor, como añadir reglas, analizar textos, y demas.
 Con un **86%** de lineas testeadas segun Coverage.\
+Se pueden correr con :
+- **`python3 tests.py`** (estando el servidor levantado)
+
 Algunos ejemplos:
+
 
 ```python
 def setUp(self):
@@ -322,5 +326,5 @@ En el caso de analisis de archivos hay un `file.txt` en el directorio `analyzeFi
 - La REST-API fue testeada en Kali-Linux y Windows7 sin errores.
 - La version 2 , como mencione al principio, esta disponible en mis repositorios de github.
 - Para las respuestas en una terminal, se utiliza la funcion `json.dumps(indent=4)` lo cual permite un PrettyPrint, a diferencia de las peticiones hechas directamente desde el navegador, que usan la funcion `jsonify`. Esto quiere decir que si se hacen peticiones POST tales como **addRule** en un sitio web alterno a la terminal, la respuesta del servidor, a pesar de ser correcta, no sera tan legible. 
-
+- Los tests 
 
