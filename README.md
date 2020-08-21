@@ -144,25 +144,26 @@ RUN pip3 install Flask-HTTPAuth \
 ENTRYPOINT ["python3","main.py"]
 ```
 ## Pasos
+*Las opciones marcadas con :star: son las recomendadas*
 
 1. **Instalar [Docker](https://www.docker.com/) (guia disponible en el website oficial)**
 
 2.  **Descargar el repositorio**
-    - **`git clone https://github.com/irt-mercadolibre/challenge_yara_guidoenr4`** 
+    - **`git clone https://github.com/irt-mercadolibre/challenge_yara_guidoenr4`** :star:
     - o simplemente descargar el `.zip` y extraerlo 
  
 3. **Limpiar / Mantener las rules**
     - Si se quiere compilar el website sin rules, ejecutar el script: \
      **`bash bash-scripts/clean-rules.sh`** \
      que trunca los archivos que contiene las rules de yara ya existentes permitiendo que el mismo quede con 0 rules.
-    - En caso de que se quiera mantener las rules, omitir este paso.
+    - En caso de que se quiera mantener las rules, omitir este paso. :star:
 
 4. **Compilar el proyecto (dentro del directorio del repositorio)**
-    - **`docker build -t melichallenge .`** 
+    - **`docker build -t melichallenge .`** :star:
  
 5. **Correr el proyecto**
    - Se puede correr de varias formas, **la forma que yo recomiendo** es utilizando el comando: \
-    **`docker run -d -p 8080:8080 --name melitest melichallenge`** \
+    **`docker run -d -p 8080:8080 --name melitest melichallenge`** :star: \
     donde el servidor corre de fondo, lo cual en este caso es util puesto que queremos tenerlo levantado para hacer las correspondientes pruebas. 
    - En caso de no querer usar el puerto **8080** se debe realizar el mapeo de puertos correspondientes de la siguiente manera: \
    **`docker run -d -p PUERTO:8080 --name melitest melichallenge`** \
@@ -170,7 +171,7 @@ ENTRYPOINT ["python3","main.py"]
           
 6. **Ver las respuestas del servidor**
     - Mediante docker, al estar el servidor corriendo de fondo, se puede ejecutar el comando :\
-    **`docker logs -f melitest`**\
+    **`docker logs -f melitest`** :star:\
     para poder ver el historial de peticiones enviadas al servidor en tiempo real.
     - Tambien se puede acceder a **`http://localhost:8080`** y verlo en el navegador que quieras
 
