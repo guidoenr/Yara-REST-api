@@ -321,11 +321,12 @@ ejemplos:
 
 ------------------------------------------------------------------------------------------------------------------------------
 ## Observaciones
-- Estos scripts estan hardcodeados con `rules_id` y `texts` al azar, los hice yo para probar el servidor.
-En el caso de analisis de archivos hay un `file.txt` en el directorio `analyzeFiles/` con un texto al azar y en su mismo script esta hardcodeado su path en `file=@/root/workspace/challenge_yara_guidoenr4/analyzeFiles/file.txt`
+- Pense en guardar las rules en una base de datos, tal vez usando MongoDB o almacenandolas en el sitio.. pero tome la decision de guardar las rules en archivos `.json` para una simplicidad, creyendo que tal vez no se evalua este requerimiento en el enunciado. Ademas, permite cierta seguridad a ataques [IDORS](https://portswigger.net/web-security/access-control/idor).
+- Los scripts estan hardcodeados con `rules_id` y `texts` al azar, los hice yo para probar el servidor.
+En el caso de analisis de archivos hay un `file.txt` en el directorio `analyzeFiles/` con un texto al azar y en su mismo script esta hardcodeado su path en `file=@/root/workspace/challenge_yara_guidoenr4/analyzeFiles/file.txt`.
 - El servidor cuenta con varias funcionalidades mas, tales como logs de ciertas cosas , que se pueden ver en el funcionamiento del mismo.
 - La REST-API fue testeada en Kali-Linux y Windows7 sin errores.
-- La version 2 , como mencione al principio, esta disponible en mis repositorios de github.
-- Para las respuestas en una terminal, se utiliza la funcion `json.dumps(indent=4)` lo cual permite un PrettyPrint, a diferencia de las peticiones hechas directamente desde el navegador, que usan la funcion `jsonify`. Esto quiere decir que si se hacen peticiones POST tales como **addRule** en un sitio web alterno a la terminal, la respuesta del servidor, a pesar de ser correcta, no sera tan legible. 
-- Los tests estan pensados con el status default del servidor, es posible que no corran si hay inconsistencias con los datos.
+- Existe una version 2, como mencione al principio, mas dinamica que esta.
+- Para las respuestas en una terminal, se utiliza la funcion `json.dumps(indent=4)` para retornar los responseBody, lo cual permite un PrettyPrint, a diferencia de las peticiones hechas directamente desde el navegador, que usan la funcion `jsonify`. Esto quiere decir que si se hacen peticiones POST tales como **addRule** o **analyzeFile** en un sitio web alterno a la terminal, la respuesta del servidor, a pesar de ser correcta, no sera tan legible. 
+- Los tests estan pensados con el status default del servidor, es posible que no corran si hay inconsistencias con los datos (ejemplo: borrar las rules del servidor y volver a cargarlas con otro orden, generando distintos IDS)
 
