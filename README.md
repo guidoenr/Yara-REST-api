@@ -82,7 +82,7 @@ La funcion `analyzeText()` *line: 56 on main.py* al recibir un texto, hace un ba
     ]
     }
    
-Pero en el caso en el que **las reglas no se encuentren cargadas**, la pagina no retorna un error, sino otro ResponseBody diciendo que esa regla no existe, para darle a conocer al usuario que el error se debe a un error de tipeo. Un ResponseBody podria ser el siguiente:
+Pero en el caso en el que **las reglas no se encuentren cargadas**, la pagina no retorna un error, sino otro ResponseBody diciendo que esa regla no existe, para darle a conocer al usuario que el error se debe a un error de tipeo, porque no merece la pena retornar solamente un codigo de error cuando el texto a analizar pudo ser matcheado con alguna rule. Un ResponseBody podria ser el siguiente:
 
     {
     "status": "ok",
