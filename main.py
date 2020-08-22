@@ -44,7 +44,7 @@ def getRules():
     else:
         with open(rulesPath) as json_file:
             data = json.load(json_file)
-            return jsonify(data)
+            return jsonify(data), 200
 
 
 @app.route('/rules/<string:rule_name>', methods=['GET'])
