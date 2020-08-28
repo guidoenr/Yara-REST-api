@@ -1,13 +1,8 @@
-# challenge_yara_guidoenr4 (res)
+# Yara-REST-Api (res)
 
 Implemente una **[API-REST](https://es.wikipedia.org/wiki/Transferencia_de_Estado_Representacional)** usando **Python3.8**.
 La api funciona a costas de **[Flask](https://flask.palletsprojects.com/en/1.1.x/)** un framework escrito en python que permite crear la estructura de un backend para poder manipular requests, entre otras cosas.
 La finalidad de este website es poder interactuar con el sitio en tiempo real, realizando varias peticiones al mismo. Cuenta con varias funcionalidades, tales como analizar un archivo, analizar un texto, añadir una regla de yara, entre otras cosas.
-
-**OBS**: **Version 2**\
-Existe otra version la cual es mas dinamica a comparación de esta, donde las reglas de yara que son añadidas en el momento se borran una vez que el servidor es finalizado. 
-Les presento esta que tal vez cumple mas con los requerimientos del enunciado.
-> 'Es importante que como esta API va a tener bastante trafico, no tenga que cargar las reglas cada vez que tenga que hacer un análisis'
 
 # Documentación
 
@@ -149,7 +144,7 @@ ENTRYPOINT ["python3","main.py"]
 1. **Instalar [Docker](https://www.docker.com/) (guia disponible en el website oficial)**
 
 2.  **Descargar el repositorio**
-    - **`git clone https://github.com/irt-mercadolibre/challenge_yara_guidoenr4`** :star:
+    - **`git clone https://github.com/irt-mercadolibre/Yara-REST-api`** :star:
     - o simplemente descargar el `.zip` y extraerlo 
  
 3. **Limpiar / Mantener las rules**
@@ -159,26 +154,26 @@ ENTRYPOINT ["python3","main.py"]
     - En caso de que se quiera mantener las rules, omitir este paso. :star:
 
 4. **Compilar el proyecto (dentro del directorio del repositorio)**
-    - **`docker build -t melichallenge .`** :star:
+    - **`docker build -t yararestapi .`** :star:
  
 5. **Correr el proyecto**
    - Se puede correr de varias formas, **la forma que yo recomiendo** es utilizando el comando: \
-    **`docker run -d -p 8080:8080 --name melitest melichallenge`** :star: \
+    **`docker run -d -p 8080:8080 --name apirest yararestapi`** :star: \
     donde el servidor corre de fondo, lo cual en este caso es util puesto que queremos tenerlo levantado para hacer las correspondientes pruebas. 
    - En caso de no querer usar el puerto **8080** se debe realizar el mapeo de puertos correspondientes de la siguiente manera: \
-   **`docker run -d -p PUERTO:8080 --name melitest melichallenge`** \
+   **`docker run -d -p PUERTO:8080 --name apirest yararestapi`** \
     donde el parametro `PUERTO` es un puerto que debe elegir el cliente para poder hacer el mapeo y luego acceder a ese puerto en lugar del  8080
           
 6. **Ver las respuestas del servidor**
     - Mediante docker, al estar el servidor corriendo de fondo, se puede ejecutar el comando :\
-    **`docker logs -f melitest`** :star:\
+    **`docker logs -f apirest`** :star:\
     para poder ver el historial de peticiones enviadas al servidor en tiempo real.
     - Tambien se puede acceder a **`http://localhost:8080`** y verlo en el navegador que quieras
 
 7. **Verificar el funcionamiento**
     - Al estar iniciado el servidor, se puede acceder **`http://localhost:8080`** desde tu navegador y recibir una respuesta como esta:
 ```python
-Hello, Friend :) Bienvenido al meli-challenge de Guido Enrique
+Hello, friend
 ```
 
 **Detener el servidor** 
@@ -186,10 +181,6 @@ Hello, Friend :) Bienvenido al meli-challenge de Guido Enrique
     **`docker stop melitest`**\
     y liberar la conexion en el puerto 8080. Al detener el servidor, las reglas quedaran guardadas en **`rules/saved_rules.yara`** y al iniciar el servidor nuevamente las mismas se compilaran        
     
-
-
-
-
 
 
 ## Uso
@@ -202,7 +193,6 @@ Las credenciales de accesos son las siguientes: *(user:password)*
 ```json
  users = {
    'admin': 'root'
-   'guido': 'mercadolibre'
   }
 ```
 
@@ -246,7 +236,8 @@ rule OldTokenRule
 }
 ```
 
-Las demas reglas que vienen cargadas son **SuspiciousStringsRule**, **EstoNoEsCocaPapiRule** y **DefaultRule** que no tienen nada en especial mas que una verificacion si existen **x** strings.
+Las demas reglas que vienen cargadas son **SuspiciousStringsRule** y **DefaultRule** que no tienen nada en especial mas que una verificacion si existen **x** strings.
+
 ## Python Unit Tests
 Hay varios tests en **`tests.py`** que prueban las funcionalidades del servidor, como añadir reglas, analizar textos, y demas.
 Con un **86%** de lineas testeadas segun Coverage.\
@@ -326,7 +317,6 @@ ejemplos:
 En el caso de analisis de archivos hay un `file.txt` en el directorio `analyzeFiles/` con un texto al azar y en su mismo script esta hardcodeado su path en `file=@/root/workspace/challenge_yara_guidoenr4/analyzeFiles/file.txt`.
 - El servidor cuenta con varias funcionalidades mas, tales como logs de ciertas cosas , que se pueden ver en el funcionamiento del mismo.
 - La REST-API fue testeada en Kali-Linux y Windows7 sin errores.
-- Existe una version 2, como mencione al principio, mas dinamica que esta.
 - Para las respuestas en una terminal, se utiliza la funcion `json.dumps(indent=4)` para retornar los responseBody, lo cual permite un PrettyPrint, a diferencia de las peticiones hechas directamente desde el navegador, que usan la funcion `jsonify`. Esto quiere decir que si se hacen peticiones POST tales como **addRule** o **analyzeFile** en un sitio web alterno a la terminal, la respuesta del servidor, a pesar de ser correcta, no sera tan legible. 
 - Los tests estan pensados con el status default del servidor, es posible que no corran si hay inconsistencias con los datos (ejemplo: borrar las rules del servidor y volver a cargarlas con otro orden, generando distintos IDS)
 
