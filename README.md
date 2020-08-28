@@ -144,7 +144,7 @@ ENTRYPOINT ["python3","main.py"]
 1. **Instalar [Docker](https://www.docker.com/) (guia disponible en el website oficial)**
 
 2.  **Descargar el repositorio**
-    - **`git clone https://github.com/irt-mercadolibre/Yara-REST-api`** :star:
+    - **`git clone https://github.com/guidoenr4/Yara-REST-api`** :star:
     - o simplemente descargar el `.zip` y extraerlo 
  
 3. **Limpiar / Mantener las rules**
@@ -178,7 +178,7 @@ Hello, friend
 
 **Detener el servidor** 
 - Luego de un tiempo determinado, podes finalizar el servidor con el comando:\
-    **`docker stop melitest`**\
+    **`docker stop apirest`**\
     y liberar la conexion en el puerto 8080. Al detener el servidor, las reglas quedaran guardadas en **`rules/saved_rules.yara`** y al iniciar el servidor nuevamente las mismas se compilaran        
     
 
