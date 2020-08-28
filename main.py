@@ -1,4 +1,6 @@
 # @autor : github.com/guidoenr4
+# @version : 2.0 
+# @latest edit: 28-08-20
 
 import os, ast, yara, json
 from bcolors import Bcolors
@@ -7,19 +9,17 @@ from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-
 # -------------------------------------------------- CLASS ------------------------#
 app = Flask(__name__)
 auth = HTTPBasicAuth()
-rulesPath = '/root/workspace/challenge_yara_guidoenr4/rules/rules.json'
-savedRulesPath = '/root/workspace/challenge_yara_guidoenr4/rules/saved_rules.yara'
-workspacePath = '/root/workspace/challenge_yara_guidoenr4'
+rulesPath = '/root/workspace/Yara-REST-api/rules/rules.json'
+savedRulesPath = '/root/workspace/Yara-REST-api/rules/saved_rules.yara'
+workspacePath = '/root/workspace/Yara-REST-api'
 
 # --------------------------------------------------LOGGIN- AUTHENTICATION ------------------------#
 
 users = {
-    'admin': generate_password_hash('root'),
-    'guido': generate_password_hash('mercadolibre')
+    'admin': generate_password_hash('root')
 }
 
 
@@ -33,7 +33,7 @@ def verify_password(username, password):
 # -------------------------------------------------- GET -----------------------------------------#
 @app.route('/')
 def host():
-    return "Hello, Friend :) Bienvenido al meli-challenge de Guido Enrique", 200
+    return "Hello, friend", 200
 
 
 @app.route('/rules', methods=['GET'])
@@ -238,5 +238,4 @@ def theFilePassTheRules(file, rulesids):
 
 rules = loadCurrentRules()
 if __name__ == '__main__':
-    os.chdir('/root/workspace/challenge_yara_guidoenr4')
     app.run(debug=False, port=8080, host="0.0.0.0")
