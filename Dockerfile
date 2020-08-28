@@ -1,6 +1,6 @@
 FROM guidoenr4/yara-python-3.8:latest
 
-WORKDIR /root/workspace/challenge_yara_guidoenr4/
+WORKDIR /root/workspace/Yara-API-rest/
 
 COPY . .
 
